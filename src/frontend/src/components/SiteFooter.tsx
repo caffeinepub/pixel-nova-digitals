@@ -15,17 +15,7 @@ export default function SiteFooter() {
           
           <div className="flex flex-col items-center gap-2 text-center text-sm text-muted-foreground">
             <p>© {currentYear} PIXEL NOVA DIGITALS. All rights reserved.</p>
-            <p className="flex items-center gap-1">
-              Built with <Heart className="h-3 w-3 fill-primary text-primary" /> using{' '}
-              <a
-                href={`https://caffeine.ai/?utm_source=Caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(appIdentifier)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-medium text-primary hover:underline"
-              >
-                caffeine.ai
-              </a>
-            </p>
+            <p>Presented by ABHISHEK YADAV</p>
           </div>
         </div>
       </div>

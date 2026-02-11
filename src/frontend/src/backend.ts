@@ -89,6 +89,19 @@ export class ExternalBlob {
         return this;
     }
 }
+export interface HomePageContent {
+    heroSubtitle: string;
+    branding: Branding;
+    heroTitle: string;
+    premiumSection: string;
+    freeSection: string;
+}
+export interface Branding {
+    tagLine: string;
+    heroBadge: string;
+    logoFile?: string;
+    brandName: string;
+}
 export interface GenRecordEntry {
     metadata: string;
     createdAt: bigint;
@@ -118,11 +131,14 @@ export interface backendInterface {
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
     getGenHistory(): Promise<Array<GenRecordEntry>>;
+    getHomepageContent(): Promise<HomePageContent>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     isCallerAdmin(): Promise<boolean>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
+    updateGenRecord(recordId: bigint, newType: GenType, newPrompt: string, newMetadata: string): Promise<void>;
+    updateHomepageContent(content: HomePageContent): Promise<void>;
 }
-import type { GenRecordEntry as _GenRecordEntry, GenType as _GenType, UserProfile as _UserProfile, UserRole as _UserRole } from "./declarations/backend.did.d.ts";
+import type { Branding as _Branding, GenRecordEntry as _GenRecordEntry, GenType as _GenType, HomePageContent as _HomePageContent, UserProfile as _UserProfile, UserRole as _UserRole } from "./declarations/backend.did.d.ts";
 export class Backend implements backendInterface {
     constructor(private actor: ActorSubclass<_SERVICE>, private _uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, private _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, private processError?: (error: unknown) => never){}
     async _initializeAccessControlWithSecret(arg0: string): Promise<void> {
@@ -223,6 +239,20 @@ export class Backend implements backendInterface {
             return from_candid_vec_n8(this._uploadFile, this._downloadFile, result);
         }
     }
+    async getHomepageContent(): Promise<HomePageContent> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getHomepageContent();
+                return from_candid_HomePageContent_n13(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getHomepageContent();
+            return from_candid_HomePageContent_n13(this._uploadFile, this._downloadFile, result);
+        }
+    }
     async getUserProfile(arg0: Principal): Promise<UserProfile | null> {
         if (this.processError) {
             try {
@@ -265,6 +295,37 @@ export class Backend implements backendInterface {
             return result;
         }
     }
+    async updateGenRecord(arg0: bigint, arg1: GenType, arg2: string, arg3: string): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.updateGenRecord(arg0, to_candid_GenType_n1(this._uploadFile, this._downloadFile, arg1), arg2, arg3);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.updateGenRecord(arg0, to_candid_GenType_n1(this._uploadFile, this._downloadFile, arg1), arg2, arg3);
+            return result;
+        }
+    }
+    async updateHomepageContent(arg0: HomePageContent): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.updateHomepageContent(to_candid_HomePageContent_n18(this._uploadFile, this._downloadFile, arg0));
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.updateHomepageContent(to_candid_HomePageContent_n18(this._uploadFile, this._downloadFile, arg0));
+            return result;
+        }
+    }
+}
+function from_candid_Branding_n15(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _Branding): Branding {
+    return from_candid_record_n16(_uploadFile, _downloadFile, value);
 }
 function from_candid_GenRecordEntry_n9(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _GenRecordEntry): GenRecordEntry {
     return from_candid_record_n10(_uploadFile, _downloadFile, value);
@@ -272,8 +333,14 @@ function from_candid_GenRecordEntry_n9(_uploadFile: (file: ExternalBlob) => Prom
 function from_candid_GenType_n11(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _GenType): GenType {
     return from_candid_variant_n12(_uploadFile, _downloadFile, value);
 }
+function from_candid_HomePageContent_n13(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _HomePageContent): HomePageContent {
+    return from_candid_record_n14(_uploadFile, _downloadFile, value);
+}
 function from_candid_UserRole_n6(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _UserRole): UserRole {
     return from_candid_variant_n7(_uploadFile, _downloadFile, value);
+}
+function from_candid_opt_n17(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [string]): string | null {
+    return value.length === 0 ? null : value[0];
 }
 function from_candid_opt_n5(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_UserProfile]): UserProfile | null {
     return value.length === 0 ? null : value[0];
@@ -299,6 +366,45 @@ function from_candid_record_n10(_uploadFile: (file: ExternalBlob) => Promise<Uin
         prompt: value.prompt
     };
 }
+function from_candid_record_n14(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    heroSubtitle: string;
+    branding: _Branding;
+    heroTitle: string;
+    premiumSection: string;
+    freeSection: string;
+}): {
+    heroSubtitle: string;
+    branding: Branding;
+    heroTitle: string;
+    premiumSection: string;
+    freeSection: string;
+} {
+    return {
+        heroSubtitle: value.heroSubtitle,
+        branding: from_candid_Branding_n15(_uploadFile, _downloadFile, value.branding),
+        heroTitle: value.heroTitle,
+        premiumSection: value.premiumSection,
+        freeSection: value.freeSection
+    };
+}
+function from_candid_record_n16(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    tagLine: string;
+    heroBadge: string;
+    logoFile: [] | [string];
+    brandName: string;
+}): {
+    tagLine: string;
+    heroBadge: string;
+    logoFile?: string;
+    brandName: string;
+} {
+    return {
+        tagLine: value.tagLine,
+        heroBadge: value.heroBadge,
+        logoFile: record_opt_to_undefined(from_candid_opt_n17(_uploadFile, _downloadFile, value.logoFile)),
+        brandName: value.brandName
+    };
+}
 function from_candid_variant_n12(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
     video: null;
 } | {
@@ -322,11 +428,56 @@ function from_candid_variant_n7(_uploadFile: (file: ExternalBlob) => Promise<Uin
 function from_candid_vec_n8(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<_GenRecordEntry>): Array<GenRecordEntry> {
     return value.map((x)=>from_candid_GenRecordEntry_n9(_uploadFile, _downloadFile, x));
 }
+function to_candid_Branding_n20(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Branding): _Branding {
+    return to_candid_record_n21(_uploadFile, _downloadFile, value);
+}
 function to_candid_GenType_n1(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: GenType): _GenType {
     return to_candid_variant_n2(_uploadFile, _downloadFile, value);
 }
+function to_candid_HomePageContent_n18(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: HomePageContent): _HomePageContent {
+    return to_candid_record_n19(_uploadFile, _downloadFile, value);
+}
 function to_candid_UserRole_n3(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: UserRole): _UserRole {
     return to_candid_variant_n4(_uploadFile, _downloadFile, value);
+}
+function to_candid_record_n19(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    heroSubtitle: string;
+    branding: Branding;
+    heroTitle: string;
+    premiumSection: string;
+    freeSection: string;
+}): {
+    heroSubtitle: string;
+    branding: _Branding;
+    heroTitle: string;
+    premiumSection: string;
+    freeSection: string;
+} {
+    return {
+        heroSubtitle: value.heroSubtitle,
+        branding: to_candid_Branding_n20(_uploadFile, _downloadFile, value.branding),
+        heroTitle: value.heroTitle,
+        premiumSection: value.premiumSection,
+        freeSection: value.freeSection
+    };
+}
+function to_candid_record_n21(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    tagLine: string;
+    heroBadge: string;
+    logoFile?: string;
+    brandName: string;
+}): {
+    tagLine: string;
+    heroBadge: string;
+    logoFile: [] | [string];
+    brandName: string;
+} {
+    return {
+        tagLine: value.tagLine,
+        heroBadge: value.heroBadge,
+        logoFile: value.logoFile ? candid_some(value.logoFile) : candid_none(),
+        brandName: value.brandName
+    };
 }
 function to_candid_variant_n2(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: GenType): {
     video: null;

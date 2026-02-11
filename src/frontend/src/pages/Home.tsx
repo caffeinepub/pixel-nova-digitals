@@ -2,9 +2,14 @@ import { Image, Video, Mic, Sparkles } from 'lucide-react';
 import ToolCard from '../components/ToolCard';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from '@tanstack/react-router';
+import { useGetHomepageContent } from '../hooks/useHomepageContent';
+import { mergeWithDefaults } from '../lib/homepageDefaults';
 
 export default function Home() {
   const navigate = useNavigate();
+  const { data: backendContent } = useGetHomepageContent();
+  
+  const content = mergeWithDefaults(backendContent ?? null);
 
   return (
     <div className="flex flex-col">
@@ -15,13 +20,13 @@ export default function Home() {
             <div className="flex flex-col justify-center space-y-6">
               <div className="inline-flex items-center gap-2 rounded-full border bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary w-fit">
                 <Sparkles className="h-4 w-4" />
-                100% Free Forever
+                {content.branding.heroBadge}
               </div>
               <h1 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">
-                AI-Powered Creative Tools for Everyone
+                {content.heroTitle}
               </h1>
               <p className="text-lg text-muted-foreground">
-                Transform your ideas into reality with our suite of free AI tools. Generate images, videos, and voiceovers instantly—no signup required to start creating.
+                {content.heroSubtitle}
               </p>
               <div className="flex flex-wrap gap-3">
                 <Button size="lg" onClick={() => navigate({ to: '/text-to-image' })} className="gap-2">
@@ -96,7 +101,7 @@ export default function Home() {
               </div>
               <h3 className="mb-2 text-xl font-bold">100% Free</h3>
               <p className="text-muted-foreground">
-                All our tools are completely free to use. No hidden costs, no subscriptions.
+                {content.freeSection}
               </p>
             </div>
             <div className="text-center">
@@ -114,7 +119,7 @@ export default function Home() {
               </div>
               <h3 className="mb-2 text-xl font-bold">Save Your Work</h3>
               <p className="text-muted-foreground">
-                Sign in to save your generation history and access it anytime.
+                {content.premiumSection}
               </p>
             </div>
           </div>

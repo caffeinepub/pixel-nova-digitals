@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -6,18 +6,32 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import GeneratedAssetCard from '../components/GeneratedAssetCard';
 import { Sparkles } from 'lucide-react';
 import { generateVideo } from '../lib/clientVideoGen';
-import { useAddGenRecord } from '../hooks/useQueries';
+import { useAddGenRecord, useUpdateGenRecord } from '../hooks/useQueries';
 import { useInternetIdentity } from '../hooks/useInternetIdentity';
 import { saveAssetToStore } from '../lib/historyAssetStore';
 import { toast } from 'sonner';
 import { GenType } from '../backend';
+import { parseReEditParams } from '../utils/urlParams';
 
 export default function TextToVideo() {
   const [prompt, setPrompt] = useState('');
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [reEditRecordId, setReEditRecordId] = useState<bigint | null>(null);
   const { mutate: addRecord } = useAddGenRecord();
+  const { mutate: updateRecord } = useUpdateGenRecord();
   const { identity } = useInternetIdentity();
+
+  useEffect(() => {
+    // Parse URL parameters on mount
+    const searchParams = new URLSearchParams(window.location.search);
+    const { recordId, prompt: urlPrompt } = parseReEditParams(searchParams);
+    
+    if (recordId && urlPrompt) {
+      setReEditRecordId(recordId);
+      setPrompt(urlPrompt);
+    }
+  }, []);
 
   const handleGenerate = async () => {
     if (!prompt.trim()) {
@@ -33,17 +47,31 @@ export default function TextToVideo() {
       // Save to history if authenticated
       if (identity) {
         const assetId = await saveAssetToStore(blob, 'video');
-        addRecord({
-          type: GenType.video,
-          prompt,
-          metadata: JSON.stringify({
-            assetId,
-            mimeType: 'video/webm',
-            size: blob.size,
-            duration: 3,
-          }),
+        const metadata = JSON.stringify({
+          assetId,
+          mimeType: 'video/webm',
+          size: blob.size,
+          duration: 3,
         });
-        toast.success('Video generated and saved to history!');
+
+        if (reEditRecordId) {
+          // Update existing record
+          updateRecord({
+            recordId: reEditRecordId,
+            type: GenType.video,
+            prompt,
+            metadata,
+          });
+          toast.success('Video updated in history!');
+        } else {
+          // Create new record
+          addRecord({
+            type: GenType.video,
+            prompt,
+            metadata,
+          });
+          toast.success('Video generated and saved to history!');
+        }
       } else {
         toast.success('Video generated! Sign in to save to history.');
       }
@@ -67,9 +95,13 @@ export default function TextToVideo() {
     <div className="container py-12">
       <div className="mx-auto max-w-5xl space-y-8">
         <div className="text-center">
-          <h1 className="mb-4 text-4xl font-bold tracking-tight">Text to Video</h1>
+          <h1 className="mb-4 text-4xl font-bold tracking-tight">
+            {reEditRecordId ? 'Re-edit Video' : 'Text to Video'}
+          </h1>
           <p className="text-lg text-muted-foreground">
-            Describe your vision, and we'll create an animated video for you.
+            {reEditRecordId
+              ? 'Modify your prompt and regenerate the video.'
+              : 'Describe your vision, and we\'ll create an animated video for you.'}
           </p>
         </div>
 
@@ -104,7 +136,7 @@ export default function TextToVideo() {
                 ) : (
                   <>
                     <Sparkles className="h-4 w-4" />
-                    Generate Video
+                    {reEditRecordId ? 'Regenerate Video' : 'Generate Video'}
                   </>
                 )}
               </Button>

@@ -65,6 +65,21 @@ export function useAddGenRecord() {
   });
 }
 
+export function useUpdateGenRecord() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ recordId, type, prompt, metadata }: { recordId: bigint; type: GenType; prompt: string; metadata: string }) => {
+      if (!actor) throw new Error('Actor not available');
+      return actor.updateGenRecord(recordId, type, prompt, metadata);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['genHistory'] });
+    },
+  });
+}
+
 export function useDeleteGenRecord() {
   const { actor } = useActor();
   const queryClient = useQueryClient();

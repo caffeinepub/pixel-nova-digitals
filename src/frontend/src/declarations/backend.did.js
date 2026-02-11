@@ -27,6 +27,19 @@ export const GenRecordEntry = IDL.Record({
   'recordId' : IDL.Nat,
   'prompt' : IDL.Text,
 });
+export const Branding = IDL.Record({
+  'tagLine' : IDL.Text,
+  'heroBadge' : IDL.Text,
+  'logoFile' : IDL.Opt(IDL.Text),
+  'brandName' : IDL.Text,
+});
+export const HomePageContent = IDL.Record({
+  'heroSubtitle' : IDL.Text,
+  'branding' : Branding,
+  'heroTitle' : IDL.Text,
+  'premiumSection' : IDL.Text,
+  'freeSection' : IDL.Text,
+});
 
 export const idlService = IDL.Service({
   '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
@@ -36,6 +49,7 @@ export const idlService = IDL.Service({
   'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
   'getGenHistory' : IDL.Func([], [IDL.Vec(GenRecordEntry)], ['query']),
+  'getHomepageContent' : IDL.Func([], [HomePageContent], ['query']),
   'getUserProfile' : IDL.Func(
       [IDL.Principal],
       [IDL.Opt(UserProfile)],
@@ -43,6 +57,8 @@ export const idlService = IDL.Service({
     ),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
   'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+  'updateGenRecord' : IDL.Func([IDL.Nat, GenType, IDL.Text, IDL.Text], [], []),
+  'updateHomepageContent' : IDL.Func([HomePageContent], [], []),
 });
 
 export const idlInitArgs = [];
@@ -67,6 +83,19 @@ export const idlFactory = ({ IDL }) => {
     'recordId' : IDL.Nat,
     'prompt' : IDL.Text,
   });
+  const Branding = IDL.Record({
+    'tagLine' : IDL.Text,
+    'heroBadge' : IDL.Text,
+    'logoFile' : IDL.Opt(IDL.Text),
+    'brandName' : IDL.Text,
+  });
+  const HomePageContent = IDL.Record({
+    'heroSubtitle' : IDL.Text,
+    'branding' : Branding,
+    'heroTitle' : IDL.Text,
+    'premiumSection' : IDL.Text,
+    'freeSection' : IDL.Text,
+  });
   
   return IDL.Service({
     '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
@@ -76,6 +105,7 @@ export const idlFactory = ({ IDL }) => {
     'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
     'getGenHistory' : IDL.Func([], [IDL.Vec(GenRecordEntry)], ['query']),
+    'getHomepageContent' : IDL.Func([], [HomePageContent], ['query']),
     'getUserProfile' : IDL.Func(
         [IDL.Principal],
         [IDL.Opt(UserProfile)],
@@ -83,6 +113,12 @@ export const idlFactory = ({ IDL }) => {
       ),
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
     'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+    'updateGenRecord' : IDL.Func(
+        [IDL.Nat, GenType, IDL.Text, IDL.Text],
+        [],
+        [],
+      ),
+    'updateHomepageContent' : IDL.Func([HomePageContent], [], []),
   });
 };
 

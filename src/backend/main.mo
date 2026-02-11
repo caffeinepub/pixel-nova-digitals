@@ -1,6 +1,4 @@
 import Map "mo:core/Map";
-import Text "mo:core/Text";
-import Iter "mo:core/Iter";
 import Nat "mo:core/Nat";
 import Array "mo:core/Array";
 import Principal "mo:core/Principal";
@@ -10,9 +8,36 @@ import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
 
 actor {
-  // Initialize the access control state
   let accessControlState = AccessControl.initState();
   include MixinAuthorization(accessControlState);
+
+  public type Branding = {
+    tagLine : Text;
+    brandName : Text;
+    heroBadge : Text;
+    logoFile : ?Text;
+  };
+
+  public type HomePageContent = {
+    heroTitle : Text;
+    heroSubtitle : Text;
+    freeSection : Text;
+    premiumSection : Text;
+    branding : Branding;
+  };
+
+  var homePageContent = {
+    heroTitle = "Generative Magic, Super Easy!";
+    heroSubtitle = "Generate text, audio, image and video through AI - for free.";
+    freeSection = "Free access for all - no email required";
+    premiumSection = "Premium subscription with full features";
+    branding = {
+      tagLine = "Effortless AI for all";
+      brandName = "Magic Genie AI";
+      heroBadge = "ABHISHEK YADAV PRESENT";
+      logoFile = ?"genie-logo-darker.png";
+    };
+  };
 
   public type GenType = {
     #text;
@@ -54,7 +79,6 @@ actor {
     };
   };
 
-  // User profile type
   public type UserProfile = {
     name : Text;
   };
@@ -62,6 +86,18 @@ actor {
   let userProfiles = Map.empty<Principal, UserProfile>();
   let userGenHistory = Map.empty<Principal, Map.Map<Nat, GenRecord>>();
   var nextRecordId = 0;
+
+  // Homepage content management
+  public shared ({ caller }) func updateHomepageContent(content : HomePageContent) : async () {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      Runtime.trap("Unauthorized: Only admins can update homepage content");
+    };
+    homePageContent := content;
+  };
+
+  public query ({ caller }) func getHomepageContent() : async HomePageContent {
+    homePageContent;
+  };
 
   // User profile management functions
   public query ({ caller }) func getCallerUserProfile() : async ?UserProfile {
@@ -140,6 +176,34 @@ actor {
         };
         recordMap.remove(recordId);
         true;
+      };
+    };
+  };
+
+  public shared ({ caller }) func updateGenRecord(recordId : Nat, newType : GenType, newPrompt : Text, newMetadata : Text) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can update generation records");
+    };
+
+    switch (userGenHistory.get(caller)) {
+      case (null) {
+        Runtime.trap("No record found for user");
+      };
+      case (?recordMap) {
+        switch (recordMap.get(recordId)) {
+          case (null) {
+            Runtime.trap("Record does not exist");
+          };
+          case (?_) {
+            let updatedRecord : GenRecord = {
+              type_ = newType;
+              prompt = newPrompt;
+              createdAt = recordId.toInt();
+              metadata = newMetadata;
+            };
+            recordMap.add(recordId, updatedRecord);
+          };
+        };
       };
     };
   };

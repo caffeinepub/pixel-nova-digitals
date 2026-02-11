@@ -206,3 +206,35 @@ export function getSecretFromHash(paramName: string): string | null {
 export function getSecretParameter(paramName: string): string | null {
     return getSecretFromHash(paramName);
 }
+
+/**
+ * Encodes re-edit parameters for URL navigation
+ * Used when navigating from history to a tool page with prefilled data
+ *
+ * @param recordId - The record ID to re-edit
+ * @param prompt - The original prompt text
+ * @returns URL-encoded query string
+ */
+export function encodeReEditParams(recordId: bigint, prompt: string): string {
+    const params = new URLSearchParams();
+    params.set('recordId', recordId.toString());
+    params.set('prompt', prompt);
+    return params.toString();
+}
+
+/**
+ * Parses re-edit parameters from URL search params
+ * Used in tool pages to detect and load re-edit mode
+ *
+ * @param searchParams - URLSearchParams object from the current URL
+ * @returns Object containing recordId (as bigint) and prompt, or nulls if not found
+ */
+export function parseReEditParams(searchParams: URLSearchParams): { recordId: bigint | null; prompt: string | null } {
+    const recordIdStr = searchParams.get('recordId');
+    const prompt = searchParams.get('prompt');
+
+    return {
+        recordId: recordIdStr ? BigInt(recordIdStr) : null,
+        prompt: prompt,
+    };
+}

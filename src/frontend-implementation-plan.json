@@ -1,258 +1,48 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "PIXEL NOVA DIGITALS — Free in-browser creative tools (image, video, voiceover) with Internet Identity",
+  "title": "User profile editing (display name) for signed-in users",
   "requirements": [
     {
       "id": "REQ-1",
-      "summary": "Create a branded client-facing site with clear navigation to all free tools and a placeholder for future tools.",
+      "summary": "Provide an authenticated-user \"Edit Profile\" entry point and dialog to update display name after onboarding.",
       "acceptanceCriteria": [
-        "A landing/home page exists with PIXEL NOVA DIGITALS branding and a clear list of tools.",
-        "All user-facing text is in English.",
-        "The UI indicates the site is free (no pricing/paywall UI).",
-        "Navigation lets users access each tool from the home page."
+        "When a user is signed in, there is a visible entry point labeled \"Edit Profile\" available from the main UI (e.g., header or account area).",
+        "Selecting \"Edit Profile\" opens a dialog or page that pre-fills the current saved name (if any) and allows changing it.",
+        "Submitting the form saves the updated name via the existing profile save flow and shows a success message.",
+        "After saving, any UI that depends on the caller profile reflects the updated name without requiring a full page reload.",
+        "If the user is not authenticated, the edit profile entry point is not shown (or is disabled with a clear sign-in requirement)."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/App.tsx",
+          "path": "frontend/src/components/EditProfileDialog.tsx",
           "operation": "create",
-          "description": "Create the app shell and route wiring (home + tool pages + My History) so every tool is reachable from the home page; include a global layout (header/nav/footer) with clear “100% Free” messaging."
-        },
-        {
-          "path": "frontend/src/pages/Home.tsx",
-          "operation": "create",
-          "description": "Implement the PIXEL NOVA DIGITALS landing page: branded hero section, tool list/cards for Text-to-Image/Text-to-Video/Text-to-Voiceover, and a visible placeholder card/section for future tools."
+          "description": "Create an EditProfileDialog composed from existing shadcn/ui primitives (do not modify files under frontend/src/components/ui). Use the authorization component’s frontend guidance by relying on existing authentication state (useInternetIdentity) and caller profile hooks (useGetCallerUserProfile, useSaveCallerUserProfile) to (1) prefill the current name, (2) allow editing, (3) save, and (4) show a success toast/message; invalidate/refetch should ensure the updated name is reflected without a full reload. Verify the component's usage instructions before implementing."
         },
         {
           "path": "frontend/src/components/SiteHeader.tsx",
-          "operation": "create",
-          "description": "Create a reusable header/navigation component (used by App layout) that links to Home and each tool page, plus a My History entry. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/components/SiteFooter.tsx",
-          "operation": "create",
-          "description": "Create a lightweight footer that reiterates the site is free and provides basic site identity/branding."
+          "operation": "modify",
+          "description": "Add a signed-in-only, clearly labeled \"Edit Profile\" entry point in the header main UI that opens EditProfileDialog; hide (or disable with a clear sign-in requirement) when unauthenticated. Also fetch and display the current profile name in the header (e.g., next to account actions) so the name visibly updates after save via React Query cache invalidation. Verify the component's usage instructions before implementing."
         }
       ]
     },
     {
       "id": "REQ-2",
-      "summary": "Add a client-only Text-to-Image generator with preview and download.",
+      "summary": "Wire profile editing to the existing caller profile save flow and avoid introducing any new backend APIs or schema changes.",
       "acceptanceCriteria": [
-        "User can enter a prompt and click Generate to produce an image preview.",
-        "User can download the generated image as a file.",
-        "Generation works without calling any third-party AI provider APIs."
+        "The profile edit flow calls the existing backend method for saving the caller profile (no duplicate APIs).",
+        "No backend state schema changes are required for this feature."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/TextToImage.tsx",
-          "operation": "create",
-          "description": "Create the Text-to-Image page: prompt input, Generate action, deterministic in-browser image generation (e.g., canvas-based procedural output derived from the prompt), preview, and download-as-PNG control. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/lib/clientImageGen.ts",
-          "operation": "create",
-          "description": "Implement a pure client-side image generator utility (no network calls) that renders a prompt-derived composition to a Canvas and returns a downloadable blob/data URL."
-        },
-        {
-          "path": "frontend/src/components/GeneratedAssetCard.tsx",
-          "operation": "create",
-          "description": "Create a shared UI component for showing generated results (preview area + metadata + download button) to reuse across tools. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/App.tsx",
+          "path": "frontend/src/components/EditProfileDialog.tsx",
           "operation": "modify",
-          "description": "Wire the Text-to-Image page into routing and navigation so it is accessible from Home and the global header."
-        }
-      ]
-    },
-    {
-      "id": "REQ-3",
-      "summary": "Add a client-only Text-to-Voiceover tool using browser speech synthesis with playback controls.",
-      "acceptanceCriteria": [
-        "User can enter text and trigger voice playback.",
-        "User can stop playback and re-run with edited text.",
-        "No third-party AI provider APIs are used."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/TextToVoiceover.tsx",
-          "operation": "create",
-          "description": "Create the Text-to-Voiceover page using the browser SpeechSynthesis API: text area, voice selection (where available), play/pause/resume/stop controls, and clear status messaging (e.g., “Playing”, “Stopped”). Verify the component's usage instructions before implementing."
+          "description": "Ensure the save action uses the existing profile save flow by calling the existing React Query mutation hook (useSaveCallerUserProfile) which invokes the backend saveCallerUserProfile method; do not add any new backend calls. Handle authorization failures gracefully (e.g., show an error toast if the backend rejects unauthenticated callers), per the authorization component guidance. Verify the component's usage instructions before implementing."
         },
         {
-          "path": "frontend/src/lib/voiceover.ts",
-          "operation": "create",
-          "description": "Add a client-side wrapper around SpeechSynthesis to manage utterance lifecycle, pause/resume/stop, and safe re-run with edited text (no external services)."
-        },
-        {
-          "path": "frontend/src/App.tsx",
+          "path": "frontend/src/hooks/useQueries.ts",
           "operation": "modify",
-          "description": "Wire the Text-to-Voiceover page into routing and navigation so it is accessible from Home and the global header."
-        }
-      ]
-    },
-    {
-      "id": "REQ-4",
-      "summary": "Add a client-only Text-to-Video generator producing a simple animated video with preview and download.",
-      "acceptanceCriteria": [
-        "User can enter a prompt and click Generate to produce a playable video preview.",
-        "User can download the generated video file.",
-        "Generation works without calling any third-party AI provider APIs."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/TextToVideo.tsx",
-          "operation": "create",
-          "description": "Create the Text-to-Video page: prompt input, Generate action, in-browser animation rendered to Canvas, recorded via MediaRecorder to a video blob (e.g., webm), with preview player and download control. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/lib/clientVideoGen.ts",
-          "operation": "create",
-          "description": "Implement a pure client-side video generator utility that renders an animated scene to Canvas and records it via MediaRecorder, returning a blob URL for preview and a downloadable file."
-        },
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Wire the Text-to-Video page into routing and navigation so it is accessible from Home and the global header."
-        }
-      ]
-    },
-    {
-      "id": "REQ-5",
-      "summary": "Add Internet Identity sign-in and a per-user “My History” UI that persists across sessions via backend calls.",
-      "acceptanceCriteria": [
-        "User can sign in/out with Internet Identity.",
-        "After sign-in, generated items are associated to the signed-in principal.",
-        "A “My History” section lists prior generations with timestamp and type (image/video/voiceover) and allows re-opening an item."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/LoginButton.tsx",
-          "operation": "create",
-          "description": "Add a Login/Logout button using the existing Internet Identity hook; on logout clear cached query data to avoid leaking personalized history across sessions. Use the selected authorization component’s frontend guidance for login/logout state handling; verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/components/ProfileSetupDialog.tsx",
-          "operation": "create",
-          "description": "Implement a first-login profile setup dialog asking for a display name; use backend getCallerUserProfile/saveCallerUserProfile to avoid showing principal IDs. Use the selected authorization component’s user profile setup guidance; verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/hooks/useCurrentUserProfile.ts",
-          "operation": "create",
-          "description": "Create a react-query hook to fetch the current user profile from the backend actor with correct loading states to prevent modal flash, following the selected authorization component guidance; verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/hooks/useGenHistory.ts",
-          "operation": "create",
-          "description": "Create a react-query hook to fetch the signed-in user’s generation history from the backend actor and expose loading/error states for the My History page."
-        },
-        {
-          "path": "frontend/src/hooks/useAddGenRecord.ts",
-          "operation": "create",
-          "description": "Create a small helper/hook to persist a generation record (type/prompt/metadata) to the backend after a client-side generation completes, gated so it only runs when authenticated."
-        },
-        {
-          "path": "frontend/src/pages/MyHistory.tsx",
-          "operation": "create",
-          "description": "Create a “My History” page that requires sign-in, lists prior generations with timestamp and type, and supports re-opening items by showing stored prompt + metadata (and links back to the relevant tool page). Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/components/RequireAuth.tsx",
-          "operation": "create",
-          "description": "Add a reusable auth gate component used by My History (and optionally tool persistence sections) to show a friendly sign-in prompt when the user is not authenticated. Use the selected authorization component’s guidance about keeping application data behind login; verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/pages/TextToImage.tsx",
-          "operation": "modify",
-          "description": "After successful client-side image generation, call the backend to store a generation record (type=image, prompt, metadata containing download-friendly info like mime/size and an internal reference such as a localStorage key). Ensure this only runs when signed in."
-        },
-        {
-          "path": "frontend/src/pages/TextToVideo.tsx",
-          "operation": "modify",
-          "description": "After successful client-side video generation, call the backend to store a generation record (type=video, prompt, metadata such as duration/format and an internal reference such as a localStorage key). Ensure this only runs when signed in."
-        },
-        {
-          "path": "frontend/src/pages/TextToVoiceover.tsx",
-          "operation": "modify",
-          "description": "When voiceover playback is triggered (or on explicit “Save to History”), call the backend to store a generation record (type=sound, text prompt, metadata describing voice name/rate/pitch). Ensure this only runs when signed in."
-        },
-        {
-          "path": "frontend/src/lib/historyAssetStore.ts",
-          "operation": "create",
-          "description": "Implement a small client-side asset reference store (e.g., localStorage/IndexedDB abstraction) so generated blobs can be re-opened locally when possible using identifiers saved in history metadata."
-        },
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Wire My History route and integrate LoginButton + ProfileSetupDialog into the global layout so sign-in and profile setup are available across the app."
-        }
-      ]
-    },
-    {
-      "id": "REQ-7",
-      "summary": "Implement a cohesive, distinct, responsive visual theme across all pages (avoid default look; avoid blue/purple primary).",
-      "acceptanceCriteria": [
-        "Theme is consistent across pages (buttons, inputs, cards, headings).",
-        "Theme does not rely on blue/purple as the primary palette unless explicitly necessary.",
-        "UI is responsive and usable on mobile and desktop."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/index.css",
-          "operation": "modify",
-          "description": "Update global CSS variables (Tailwind/shadcn tokens) to a distinctive non-blue/purple primary palette (e.g., warm charcoal + ember/orange accent), and set consistent base typography/spacing defaults used across the site."
-        },
-        {
-          "path": "frontend/tailwind.config.js",
-          "operation": "modify",
-          "description": "Extend Tailwind theme as needed for the PIXEL NOVA DIGITALS look (brand-specific colors/gradients/shadows) while keeping responsiveness and consistent components styling."
-        },
-        {
-          "path": "frontend/src/index.css",
-          "operation": "create",
-          "description": "Create a src-level CSS entry that matches the immutable import in frontend/src/main.tsx by re-exporting/forwarding to frontend/index.css (e.g., via a CSS @import), ensuring global theme styles apply."
-        },
-        {
-          "path": "frontend/src/components/ToolCard.tsx",
-          "operation": "create",
-          "description": "Create a consistent tool card component (icon, title, description, CTA) to reuse on Home and optionally inside tool pages for cross-navigation. Verify the component's usage instructions before implementing."
-        }
-      ]
-    },
-    {
-      "id": "REQ-8",
-      "summary": "Add and use generated static brand assets (logo, hero illustration, tool icons) from the static assets folder.",
-      "acceptanceCriteria": [
-        "Generated images exist under frontend/public/assets/generated and are referenced directly by the frontend.",
-        "Home page displays the logo and hero illustration.",
-        "Each tool entry has a simple icon."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/public/assets/generated/pnd-logo.dim_512x512.png",
-          "operation": "create",
-          "description": "Add the generated PIXEL NOVA DIGITALS logo file as a static asset at the exact required path and filename."
-        },
-        {
-          "path": "frontend/public/assets/generated/pnd-hero.dim_1600x900.png",
-          "operation": "create",
-          "description": "Add the generated hero illustration file as a static asset at the exact required path and filename."
-        },
-        {
-          "path": "frontend/public/assets/generated/pnd-tool-icons.dim_256x256.png",
-          "operation": "create",
-          "description": "Add the generated tool icon set file as a static asset at the exact required path and filename."
-        },
-        {
-          "path": "frontend/src/pages/Home.tsx",
-          "operation": "modify",
-          "description": "Reference and render the static assets from frontend/public/assets/generated/pnd-logo.dim_512x512.png and frontend/public/assets/generated/pnd-hero.dim_1600x900.png; use frontend/public/assets/generated/pnd-tool-icons.dim_256x256.png to visually represent each tool entry (image/video/voice)."
-        },
-        {
-          "path": "frontend/src/components/SiteHeader.tsx",
-          "operation": "modify",
-          "description": "Use the static logo at frontend/public/assets/generated/pnd-logo.dim_512x512.png in the header for consistent branding across all pages."
+          "description": "Confirm the existing caller profile query key and invalidation behavior support immediate UI refresh after a successful save (e.g., currentUserProfile invalidation is sufficient). If needed, extend the hook ergonomics (without changing backend calls) to support the edit dialog’s success/error handling while continuing to call the same existing backend method. Verify the component's usage instructions before implementing."
         }
       ]
     }

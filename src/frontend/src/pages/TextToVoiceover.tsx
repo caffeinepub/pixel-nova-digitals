@@ -6,10 +6,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Play, Pause, Square, Mic } from 'lucide-react';
 import { VoiceoverController } from '../lib/voiceover';
-import { useAddGenRecord } from '../hooks/useQueries';
+import { useAddGenRecord, useUpdateGenRecord } from '../hooks/useQueries';
 import { useInternetIdentity } from '../hooks/useInternetIdentity';
 import { toast } from 'sonner';
 import { GenType } from '../backend';
+import { parseReEditParams } from '../utils/urlParams';
 
 export default function TextToVoiceover() {
   const [text, setText] = useState('');
@@ -17,7 +18,9 @@ export default function TextToVoiceover() {
   const [selectedVoice, setSelectedVoice] = useState<string>('');
   const [controller] = useState(() => new VoiceoverController());
   const [status, setStatus] = useState<'idle' | 'playing' | 'paused'>('idle');
+  const [reEditRecordId, setReEditRecordId] = useState<bigint | null>(null);
   const { mutate: addRecord } = useAddGenRecord();
+  const { mutate: updateRecord } = useUpdateGenRecord();
   const { identity } = useInternetIdentity();
 
   useEffect(() => {
@@ -37,6 +40,17 @@ export default function TextToVoiceover() {
     };
   }, [controller, selectedVoice]);
 
+  useEffect(() => {
+    // Parse URL parameters on mount
+    const searchParams = new URLSearchParams(window.location.search);
+    const { recordId, prompt: urlPrompt } = parseReEditParams(searchParams);
+    
+    if (recordId && urlPrompt) {
+      setReEditRecordId(recordId);
+      setText(urlPrompt);
+    }
+  }, []);
+
   const handlePlay = () => {
     if (!text.trim()) {
       toast.error('Please enter some text');
@@ -53,15 +67,29 @@ export default function TextToVoiceover() {
 
     // Save to history if authenticated
     if (identity && status === 'idle') {
-      addRecord({
-        type: GenType.sound,
-        prompt: text,
-        metadata: JSON.stringify({
-          voiceName: voice?.name || 'default',
-          lang: voice?.lang || 'en-US',
-        }),
+      const metadata = JSON.stringify({
+        voiceName: voice?.name || 'default',
+        lang: voice?.lang || 'en-US',
       });
-      toast.success('Voiceover saved to history!');
+
+      if (reEditRecordId) {
+        // Update existing record
+        updateRecord({
+          recordId: reEditRecordId,
+          type: GenType.sound,
+          prompt: text,
+          metadata,
+        });
+        toast.success('Voiceover updated in history!');
+      } else {
+        // Create new record
+        addRecord({
+          type: GenType.sound,
+          prompt: text,
+          metadata,
+        });
+        toast.success('Voiceover saved to history!');
+      }
     }
   };
 
@@ -82,9 +110,13 @@ export default function TextToVoiceover() {
     <div className="container py-12">
       <div className="mx-auto max-w-4xl space-y-8">
         <div className="text-center">
-          <h1 className="mb-4 text-4xl font-bold tracking-tight">Text to Voiceover</h1>
+          <h1 className="mb-4 text-4xl font-bold tracking-tight">
+            {reEditRecordId ? 'Re-edit Voiceover' : 'Text to Voiceover'}
+          </h1>
           <p className="text-lg text-muted-foreground">
-            Convert your text into natural-sounding speech with our AI voiceover tool.
+            {reEditRecordId
+              ? 'Modify your text and regenerate the voiceover.'
+              : 'Convert your text into natural-sounding speech with our AI voiceover tool.'}
           </p>
         </div>
 
@@ -101,7 +133,7 @@ export default function TextToVoiceover() {
                 <Label htmlFor="text">Your Text</Label>
                 <Textarea
                   id="text"
-                  placeholder="Welcome to PIXEL NOVA DIGITALS. We provide free AI-powered creative tools for everyone..."
+                  placeholder="Enter the text you want to hear as a voiceover..."
                   value={text}
                   onChange={(e) => setText(e.target.value)}
                   rows={8}
@@ -134,30 +166,30 @@ export default function TextToVoiceover() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex h-48 items-center justify-center rounded-lg border bg-muted/30">
-                <div className="text-center">
-                  <Mic className="mx-auto mb-4 h-16 w-16 text-primary" />
-                  <p className="text-sm font-medium">
-                    {status === 'playing' && 'Playing...'}
-                    {status === 'paused' && 'Paused'}
-                    {status === 'idle' && 'Ready to play'}
+              <div className="flex h-64 items-center justify-center rounded-lg border bg-muted/20">
+                <div className="flex flex-col items-center gap-4">
+                  <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10">
+                    <Mic className="h-10 w-10 text-primary" />
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    {status === 'playing' ? 'Playing...' : status === 'paused' ? 'Paused' : 'Ready to play'}
                   </p>
                 </div>
               </div>
-              <div className="grid grid-cols-3 gap-2">
+              <div className="flex gap-2">
                 {status === 'idle' && (
-                  <Button onClick={handlePlay} disabled={!text.trim()} className="col-span-3 gap-2" size="lg">
+                  <Button onClick={handlePlay} disabled={!text.trim()} className="flex-1 gap-2">
                     <Play className="h-4 w-4" />
                     Play
                   </Button>
                 )}
                 {status === 'playing' && (
                   <>
-                    <Button onClick={handlePause} variant="outline" className="gap-2">
+                    <Button onClick={handlePause} variant="outline" className="flex-1 gap-2">
                       <Pause className="h-4 w-4" />
                       Pause
                     </Button>
-                    <Button onClick={handleStop} variant="outline" className="col-span-2 gap-2">
+                    <Button onClick={handleStop} variant="outline" className="flex-1 gap-2">
                       <Square className="h-4 w-4" />
                       Stop
                     </Button>
@@ -165,11 +197,11 @@ export default function TextToVoiceover() {
                 )}
                 {status === 'paused' && (
                   <>
-                    <Button onClick={handleResume} variant="outline" className="gap-2">
+                    <Button onClick={handleResume} className="flex-1 gap-2">
                       <Play className="h-4 w-4" />
                       Resume
                     </Button>
-                    <Button onClick={handleStop} variant="outline" className="col-span-2 gap-2">
+                    <Button onClick={handleStop} variant="outline" className="flex-1 gap-2">
                       <Square className="h-4 w-4" />
                       Stop
                     </Button>

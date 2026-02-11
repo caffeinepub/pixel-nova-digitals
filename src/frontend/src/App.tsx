@@ -8,6 +8,7 @@ import TextToImage from './pages/TextToImage';
 import TextToVideo from './pages/TextToVideo';
 import TextToVoiceover from './pages/TextToVoiceover';
 import MyHistory from './pages/MyHistory';
+import AdminHomeEditor from './pages/AdminHomeEditor';
 import ProfileSetupDialog from './components/ProfileSetupDialog';
 
 function Layout() {
@@ -58,12 +59,19 @@ const myHistoryRoute = createRoute({
   component: MyHistory,
 });
 
+const adminRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/admin',
+  component: AdminHomeEditor,
+});
+
 const routeTree = rootRoute.addChildren([
   indexRoute,
   textToImageRoute,
   textToVideoRoute,
   textToVoiceoverRoute,
   myHistoryRoute,
+  adminRoute,
 ]);
 
 const router = createRouter({ routeTree });

@@ -3,16 +3,21 @@ import { useGetGenHistory, useDeleteGenRecord } from '../hooks/useQueries';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Image, Video, Mic, Trash2, Loader2, FileText } from 'lucide-react';
+import { Image, Video, Mic, Trash2, Loader2, FileText, Edit } from 'lucide-react';
 import { getAssetFromStore } from '../lib/historyAssetStore';
 import { toast } from 'sonner';
 import { useState } from 'react';
 import { GenType } from '../backend';
+import { useNavigate } from '@tanstack/react-router';
+import { encodeReEditParams } from '../utils/urlParams';
+import { useInternetIdentity } from '../hooks/useInternetIdentity';
 
 export default function MyHistory() {
   const { data: history, isLoading } = useGetGenHistory();
   const { mutate: deleteRecord } = useDeleteGenRecord();
   const [previewUrls, setPreviewUrls] = useState<Record<string, string>>({});
+  const navigate = useNavigate();
+  const { identity } = useInternetIdentity();
 
   const getIcon = (type: GenType) => {
     switch (type) {
@@ -38,6 +43,25 @@ export default function MyHistory() {
       default:
         return 'Text';
     }
+  };
+
+  const getToolPath = (type: GenType): string => {
+    switch (type) {
+      case GenType.image:
+        return '/text-to-image';
+      case GenType.video:
+        return '/text-to-video';
+      case GenType.sound:
+        return '/text-to-voiceover';
+      default:
+        return '/';
+    }
+  };
+
+  const handleReEdit = (recordId: bigint, type: GenType, prompt: string) => {
+    const path = getToolPath(type);
+    const params = encodeReEditParams(recordId, prompt);
+    navigate({ to: `${path}?${params}` as any });
   };
 
   const handlePreview = async (recordId: bigint, type: GenType, metadata: string) => {
@@ -105,13 +129,26 @@ export default function MyHistory() {
                             </CardDescription>
                           </div>
                         </div>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleDelete(record.recordId)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        <div className="flex gap-2">
+                          {identity && (
+                            <Button
+                              variant="outline"
+                              size="icon"
+                              onClick={() => handleReEdit(record.recordId, record.type, record.prompt)}
+                              title="Re-edit / Touch up"
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                          )}
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleDelete(record.recordId)}
+                            title="Delete"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </div>
                     </CardHeader>
                     <CardContent className="space-y-4">

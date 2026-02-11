@@ -10,6 +10,12 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
+export interface Branding {
+  'tagLine' : string,
+  'heroBadge' : string,
+  'logoFile' : [] | [string],
+  'brandName' : string,
+}
 export interface GenRecordEntry {
   'metadata' : string,
   'createdAt' : bigint,
@@ -21,6 +27,13 @@ export type GenType = { 'video' : null } |
   { 'text' : null } |
   { 'sound' : null } |
   { 'image' : null };
+export interface HomePageContent {
+  'heroSubtitle' : string,
+  'branding' : Branding,
+  'heroTitle' : string,
+  'premiumSection' : string,
+  'freeSection' : string,
+}
 export interface UserProfile { 'name' : string }
 export type UserRole = { 'admin' : null } |
   { 'user' : null } |
@@ -33,9 +46,12 @@ export interface _SERVICE {
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
   'getGenHistory' : ActorMethod<[], Array<GenRecordEntry>>,
+  'getHomepageContent' : ActorMethod<[], HomePageContent>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
+  'updateGenRecord' : ActorMethod<[bigint, GenType, string, string], undefined>,
+  'updateHomepageContent' : ActorMethod<[HomePageContent], undefined>,
 }
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];
