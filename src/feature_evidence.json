@@ -1,0 +1,160 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-create-a-client-facing-website-for-pixel-nova-digitals-that-is-100-free-to-use-and-clearly-presents-the-available-ai-based-tools-text-to-image-text-to-video-text-to-voiceover-and-a-placeholder-area-for-additional-future-tools",
+      "featureTitle": "Create a client-facing website for “PIXEL NOVA DIGITALS” that is 100% free to use and clearly presents the available AI-based tools: Text-to-Image, Text-to-Video, Text-to-Voiceover, and a placeholder area for additional future tools.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/SiteFooter.tsx",
+        "frontend/src/components/SiteHeader.tsx",
+        "frontend/src/pages/Home.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-1"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-a-text-to-image-tool-page-that-accepts-a-text-prompt-and-produces-a-generated-image-result-entirely-on-the-client-no-external-ai-llm-service-dependency-with-options-to-download-the-output-image",
+      "featureTitle": "Add a Text-to-Image tool page that accepts a text prompt and produces a generated image result entirely on the client (no external AI/LLM service dependency), with options to download the output image.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/GeneratedAssetCard.tsx",
+        "frontend/src/lib/clientImageGen.ts",
+        "frontend/src/pages/TextToImage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-2"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-a-text-to-voiceover-tool-page-that-accepts-text-input-and-produces-voiceover-audio-using-a-client-side-approach-e-g-browser-speech-synthesis-with-basic-controls-play-pause-stop-and-an-option-to-download-export-audio-when-feasible-in-browser",
+      "featureTitle": "Add a Text-to-Voiceover tool page that accepts text input and produces voiceover audio using a client-side approach (e.g., browser speech synthesis), with basic controls (play/pause/stop) and an option to download/export audio when feasible in-browser.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/lib/voiceover.ts",
+        "frontend/src/pages/TextToVoiceover.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-3"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-a-text-to-video-tool-page-that-accepts-a-text-prompt-and-produces-a-simple-generated-video-result-entirely-on-the-client-e-g-animated-text-scene-rendered-in-browser-and-recorded-with-a-preview-and-a-download-option",
+      "featureTitle": "Add a Text-to-Video tool page that accepts a text prompt and produces a simple generated video result entirely on the client (e.g., animated text/scene rendered in-browser and recorded), with a preview and a download option.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/lib/clientVideoGen.ts",
+        "frontend/src/pages/TextToVideo.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-4"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-basic-user-accounts-using-internet-identity-so-clients-can-sign-in-and-see-their-own-generation-history-prompts-and-resulting-downloadable-assets-metadata-across-sessions",
+      "featureTitle": "Add basic user accounts using Internet Identity so clients can sign in and see their own generation history (prompts and resulting downloadable assets metadata) across sessions.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/LoginButton.tsx",
+        "frontend/src/components/ProfileSetupDialog.tsx",
+        "frontend/src/components/RequireAuth.tsx",
+        "frontend/src/lib/historyAssetStore.ts",
+        "frontend/src/pages/MyHistory.tsx",
+        "frontend/src/pages/TextToImage.tsx",
+        "frontend/src/pages/TextToVideo.tsx",
+        "frontend/src/pages/TextToVoiceover.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-5"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-provide-a-cohesive-distinct-visual-theme-for-the-site-colors-typography-spacing-component-styling-and-apply-it-consistently-across-the-landing-page-and-all-tool-pages-avoid-default-looking-ui",
+      "featureTitle": "Provide a cohesive, distinct visual theme for the site (colors, typography, spacing, component styling) and apply it consistently across the landing page and all tool pages. Avoid default-looking UI.",
+      "files": [
+        "frontend/index.css",
+        "frontend/src/components/ToolCard.tsx",
+        "frontend/src/index.css",
+        "frontend/tailwind.config.js"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-7"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-generated-static-brand-assets-logo-hero-illustration-tool-icons-to-the-frontend-and-use-them-in-the-ui-from-the-static-assets-folder-do-not-fetch-images-from-the-backend",
+      "featureTitle": "Add generated static brand assets (logo + hero illustration + tool icons) to the frontend and use them in the UI from the static assets folder (do not fetch images from the backend).",
+      "files": [
+        "frontend/src/components/SiteHeader.tsx",
+        "frontend/src/pages/Home.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-8"
+      ],
+      "confidence": "high"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "frontend/src/App.tsx": "Main application component with TanStack Router setup, theme provider, and layout structure including header, footer, and profile setup dialog.",
+  "frontend/src/index.css": "Global styles with custom OKLCH color system using warm orange/ember tones as primary colors, custom fonts (Space Grotesk for headings, Inter for body), and animation keyframes.",
+  "frontend/tailwind.config.js": "Tailwind configuration extended with custom color tokens, glow shadows, and fade-in animations to support the distinctive warm creative theme.",
+  "frontend/src/components/SiteHeader.tsx": "Responsive header component with logo, navigation links to all tools and history, mobile menu sheet, and login button.",
+  "frontend/src/components/SiteFooter.tsx": "Footer component displaying branding, copyright, and attribution link to caffeine.ai with UTM tracking.",
+  "frontend/src/components/LoginButton.tsx": "Authentication button component that handles Internet Identity login/logout with loading states and clears query cache on logout.",
+  "frontend/src/components/ProfileSetupDialog.tsx": "Modal dialog that prompts new users to enter their name on first login, preventing modal flash with proper loading state handling.",
+  "frontend/src/components/RequireAuth.tsx": "Authentication gate component that shows a friendly sign-in prompt when users try to access protected features while unauthenticated.",
+  "frontend/src/components/ToolCard.tsx": "Reusable card component for displaying tool information with icon, title, description, and call-to-action button.",
+  "frontend/src/components/GeneratedAssetCard.tsx": "Shared component for displaying generated content with preview area, loading state overlay, and download functionality.",
+  "frontend/src/pages/Home.tsx": "Landing page with hero section featuring brand assets, tool cards for all three AI tools, coming soon section, and feature highlights.",
+  "frontend/src/pages/TextToImage.tsx": "Text-to-image generation page with prompt input, client-side image generation using canvas, preview display, download functionality, and history saving using GenType.image enum value.",
+  "frontend/src/pages/TextToVideo.tsx": "Text-to-video generation page with prompt input, client-side video generation using canvas and MediaRecorder, preview player, download functionality, and history saving using GenType.video enum value.",
+  "frontend/src/pages/TextToVoiceover.tsx": "Text-to-voiceover page using browser SpeechSynthesis API with text input, voice selection, playback controls, and history saving using GenType.sound enum value.",
+  "frontend/src/pages/MyHistory.tsx": "Protected history page displaying all user's generation records with type badges, timestamps, preview loading, and delete functionality, now using correct GenType enum values and 'type' property.",
+  "frontend/src/hooks/useQueries.ts": "React Query hooks for all backend operations including user profile management, generation history fetching, adding records, and deleting records with proper cache invalidation.",
+  "frontend/src/lib/clientImageGen.ts": "Client-side image generation utility that creates deterministic abstract art on canvas based on text prompts using seeded random functions and returns both data URL and blob.",
+  "frontend/src/lib/clientVideoGen.ts": "Client-side video generation utility that creates animated particle effects on canvas, records using MediaRecorder, and returns video blob with URL.",
+  "frontend/src/lib/voiceover.ts": "Wrapper class around browser SpeechSynthesis API providing speak, pause, resume, and stop methods with callback support for state management.",
+  "frontend/src/lib/historyAssetStore.ts": "IndexedDB wrapper for storing and retrieving generated asset blobs locally, enabling preview functionality in history page."
+}

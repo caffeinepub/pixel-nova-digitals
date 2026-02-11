@@ -1,0 +1,176 @@
+{
+  "kind": "build_request",
+  "title": "PIXEL NOVA DIGITALS: Free client website with text-to-image, text-to-video, and text-to-voiceover tools",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "text": "Create a client-facing website for “PIXEL NOVA DIGITALS” that is 100% free to use and clearly presents the available AI-based tools: Text-to-Image, Text-to-Video, Text-to-Voiceover, and a placeholder area for additional future tools.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "And now i want to make a 100% free website where my clients wil able to make Text to video/ text to image/ text to voiceover and more ai based services."
+        ]
+      },
+      "acceptanceCriteria": [
+        "A landing/home page exists with PIXEL NOVA DIGITALS branding and a clear list of tools.",
+        "All user-facing text is in English.",
+        "The UI indicates the site is free (no pricing/paywall UI).",
+        "Navigation lets users access each tool from the home page."
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "text": "Add a Text-to-Image tool page that accepts a text prompt and produces a generated image result entirely on the client (no external AI/LLM service dependency), with options to download the output image.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "make Text to video/ text to image/ text to voiceover"
+        ]
+      },
+      "acceptanceCriteria": [
+        "User can enter a prompt and click Generate to produce an image preview.",
+        "User can download the generated image as a file.",
+        "Generation works without calling any third-party AI provider APIs."
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Add a Text-to-Voiceover tool page that accepts text input and produces voiceover audio using a client-side approach (e.g., browser speech synthesis), with basic controls (play/pause/stop) and an option to download/export audio when feasible in-browser.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "text to voiceover"
+        ]
+      },
+      "acceptanceCriteria": [
+        "User can enter text and trigger voice playback.",
+        "User can stop playback and re-run with edited text.",
+        "No third-party AI provider APIs are used."
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "text": "Add a Text-to-Video tool page that accepts a text prompt and produces a simple generated video result entirely on the client (e.g., animated text/scene rendered in-browser and recorded), with a preview and a download option.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "Text to video"
+        ]
+      },
+      "acceptanceCriteria": [
+        "User can enter a prompt and click Generate to produce a playable video preview.",
+        "User can download the generated video file.",
+        "Generation works without calling any third-party AI provider APIs."
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "text": "Add basic user accounts using Internet Identity so clients can sign in and see their own generation history (prompts and resulting downloadable assets metadata) across sessions.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "create a website for my clients"
+        ]
+      },
+      "acceptanceCriteria": [
+        "User can sign in/out with Internet Identity.",
+        "After sign-in, generated items are associated to the signed-in principal.",
+        "A “My History” section lists prior generations with timestamp and type (image/video/voiceover) and allows re-opening an item."
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "text": "Implement backend persistence in the single Motoko actor to store per-user generation records (type, prompt/text, createdAt, and references/identifiers needed by the frontend).",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Backend exposes methods to create and list a user’s generation records.",
+        "Records are isolated per authenticated principal.",
+        "Data survives canister upgrades using stable storage patterns (no migration file unless required by implementation)."
+      ]
+    },
+    {
+      "id": "REQ-7",
+      "text": "Provide a cohesive, distinct visual theme for the site (colors, typography, spacing, component styling) and apply it consistently across the landing page and all tool pages. Avoid default-looking UI.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Theme is consistent across pages (buttons, inputs, cards, headings).",
+        "Theme does not rely on blue/purple as the primary palette unless explicitly necessary.",
+        "UI is responsive and usable on mobile and desktop."
+      ]
+    },
+    {
+      "id": "REQ-8",
+      "text": "Add generated static brand assets (logo + hero illustration + tool icons) to the frontend and use them in the UI from the static assets folder (do not fetch images from the backend).",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Generated images exist under frontend/public/assets/generated and are referenced directly by the frontend.",
+        "Home page displays the logo and hero illustration.",
+        "Each tool entry has a simple icon."
+      ]
+    }
+  ],
+  "constraints": [
+    "Backend must remain a single Motoko actor (all logic in the main actor).",
+    "Do not modify files under frontend immutable paths: frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, frontend/src/components/ui (compose these components instead).",
+    "Do not use third-party AI/LLM providers or integrations (e.g., OpenAI/Anthropic). Tools must work without external AI services."
+  ],
+  "nonGoals": [
+    "Paid plans, billing, subscriptions, or payment processing.",
+    "Real-time collaboration or chat features.",
+    "Third-party authentication providers other than Internet Identity.",
+    "Using external databases or non-Motoko backend services."
+  ],
+  "imageRequirements": {
+    "required": [
+      "PIXEL NOVA DIGITALS logo, clean modern mark with digital/creative feel (pnd-logo.dim_512x512.png)",
+      "Website hero illustration with abstract digital creative tools motif, modern and minimal (pnd-hero.dim_1600x900.png)",
+      "Set of three simple monochrome icons: image, video, microphone/voice (pnd-tool-icons.dim_256x256.png)"
+    ],
+    "edits": []
+  },
+  "userProfileUpdate": {
+    "goalsToAdd": [
+      "Build a free client-facing PIXEL NOVA DIGITALS website with in-browser text-to-image, text-to-video, and text-to-voiceover tools."
+    ],
+    "goalsToRemove": [],
+    "preferencesToAdd": [
+      "Use English for all user-facing UI text."
+    ],
+    "preferencesToRemove": [],
+    "miscToAdd": [],
+    "miscToRemove": [],
+    "fieldsToSet": {},
+    "fieldsToDelete": []
+  }
+}

@@ -1,0 +1,109 @@
+{
+  "kind": "spec_vs_diff_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-11T03:17:38.358Z",
+  "summary": "Diff adds a new PIXEL NOVA DIGITALS frontend with routing, themed UI, client-side image/video/voice generation utilities, and authenticated history via Internet Identity-backed backend methods. However, backend persistence across upgrades and proper timestamp handling are not evidenced, and several unrequested features (admin/access control initialization, profile setup, and external promotional footer link) were added.",
+  "missing_requirements": [
+    {
+      "id": "REQ-6",
+      "requirement": "Data survives canister upgrades using stable storage patterns (stable vars and preupgrade/postupgrade or equivalent).",
+      "reason": "The added backend actor shows in-memory Maps and a mutable counter but no visible stable storage declarations or upgrade hooks in the provided truncated content, so persistence across upgrades is not evidenced.",
+      "evidence": [
+        "backend/main.mo"
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "requirement": "Each generation record includes a real createdAt timestamp.",
+      "reason": "The backend sets createdAt to recordId.toInt(), which is not a timestamp and will not reflect real creation time.",
+      "evidence": [
+        "backend/main.mo"
+      ]
+    },
+    {
+      "id": "REQ-8",
+      "requirement": "Generated images exist under frontend/public/assets/generated (logo, hero illustration, tool icons).",
+      "reason": "Frontend references files under /assets/generated, but the diff summary does not include the actual image files/paths under frontend/public/assets/generated (likely omitted as non-text/binary). Presence cannot be verified from the provided diff.",
+      "evidence": [
+        "frontend/src/components/SiteHeader.tsx",
+        "frontend/src/pages/Home.tsx"
+      ]
+    }
+  ],
+  "hallucinated_features": [
+    {
+      "description": "Admin/access-control initialization and secret-token based authorization bootstrap (including caffeineAdminToken URL parameter usage).",
+      "reason": "BuildRequest did not ask for admin roles, access control frameworks, or secret-token initialization; it only required II sign-in and per-user record isolation.",
+      "evidence": [
+        "backend/main.mo",
+        "frontend/src/hooks/useActor.ts"
+      ]
+    },
+    {
+      "description": "User profile collection and mandatory profile setup dialog requesting a name.",
+      "reason": "BuildRequest did not request user profiles or name capture; only basic accounts and per-user generation history were required.",
+      "evidence": [
+        "backend/main.mo",
+        "frontend/src/components/ProfileSetupDialog.tsx",
+        "frontend/src/hooks/useQueries.ts"
+      ]
+    },
+    {
+      "description": "Footer contains an outbound promotional link to caffeine.ai with UTM parameters.",
+      "reason": "BuildRequest did not request third-party promotional links or attribution in the footer.",
+      "evidence": [
+        "frontend/src/components/SiteFooter.tsx"
+      ]
+    },
+    {
+      "description": "IndexedDB local asset store for generated blobs (separate from backend metadata history).",
+      "reason": "BuildRequest required backend persistence of generation metadata; it did not request an additional client-side IndexedDB asset store mechanism.",
+      "evidence": [
+        "frontend/src/lib/historyAssetStore.ts",
+        "frontend/src/pages/MyHistory.tsx"
+      ]
+    },
+    {
+      "description": "Backend supports deleting generation records.",
+      "reason": "BuildRequest only required methods to create and list records; deletion was not requested.",
+      "evidence": [
+        "backend/main.mo",
+        "frontend/src/hooks/useQueries.ts",
+        "frontend/src/pages/MyHistory.tsx"
+      ]
+    }
+  ],
+  "confidence": 0.66,
+  "changed_files": [
+    "all_files_summary.json",
+    "backend/main.mo",
+    "frontend-file-summaries.txt",
+    "frontend/index.css",
+    "frontend/index.html",
+    "frontend/src/App.tsx",
+    "frontend/src/components/GeneratedAssetCard.tsx",
+    "frontend/src/components/LoginButton.tsx",
+    "frontend/src/components/ProfileSetupDialog.tsx",
+    "frontend/src/components/RequireAuth.tsx",
+    "frontend/src/components/SiteFooter.tsx",
+    "frontend/src/components/SiteHeader.tsx",
+    "frontend/src/components/ToolCard.tsx",
+    "frontend/src/hooks/useActor.ts",
+    "frontend/src/hooks/useInternetIdentity.ts",
+    "frontend/src/hooks/useQueries.ts",
+    "frontend/src/index.css",
+    "frontend/src/lib/clientImageGen.ts",
+    "frontend/src/lib/clientVideoGen.ts",
+    "frontend/src/lib/historyAssetStore.ts",
+    "frontend/src/lib/voiceover.ts",
+    "frontend/src/main.tsx",
+    "frontend/src/pages/Home.tsx",
+    "frontend/src/pages/MyHistory.tsx",
+    "frontend/src/pages/TextToImage.tsx",
+    "frontend/src/pages/TextToVideo.tsx",
+    "frontend/src/pages/TextToVoiceover.tsx",
+    "frontend/src/utils/urlParams.ts",
+    "frontend/tailwind.config.js",
+    "project_state.json"
+  ]
+}

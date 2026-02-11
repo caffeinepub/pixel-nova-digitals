@@ -1,0 +1,273 @@
+{
+  "kind": "coverage_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-11T03:17:38.361Z",
+  "sources": {
+    "buildRequest": true,
+    "implementationPlan": true
+  },
+  "requirements": {
+    "total": 8,
+    "implemented": 7,
+    "items": [
+      {
+        "id": "REQ-1",
+        "summary": "Create a client-facing website for “PIXEL NOVA DIGITALS” that is 100% free to use and clearly presents the available AI-based tools: Text-to-Image, Text-to-Video, Text-to-Voiceover, and a placeholder area for additional future tools.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/App.tsx",
+          "frontend/src/pages/Home.tsx",
+          "frontend/src/components/SiteHeader.tsx",
+          "frontend/src/components/SiteFooter.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/App.tsx",
+          "frontend/src/pages/Home.tsx",
+          "frontend/src/components/SiteHeader.tsx",
+          "frontend/src/components/SiteFooter.tsx"
+        ]
+      },
+      {
+        "id": "REQ-2",
+        "summary": "Add a Text-to-Image tool page that accepts a text prompt and produces a generated image result entirely on the client (no external AI/LLM service dependency), with options to download the output image.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/TextToImage.tsx",
+          "frontend/src/lib/clientImageGen.ts",
+          "frontend/src/components/GeneratedAssetCard.tsx",
+          "frontend/src/App.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/TextToImage.tsx",
+          "frontend/src/lib/clientImageGen.ts",
+          "frontend/src/components/GeneratedAssetCard.tsx",
+          "frontend/src/App.tsx"
+        ]
+      },
+      {
+        "id": "REQ-3",
+        "summary": "Add a Text-to-Voiceover tool page that accepts text input and produces voiceover audio using a client-side approach (e.g., browser speech synthesis), with basic controls (play/pause/stop) and an option to download/export audio when feasible in-browser.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/TextToVoiceover.tsx",
+          "frontend/src/lib/voiceover.ts",
+          "frontend/src/App.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/TextToVoiceover.tsx",
+          "frontend/src/lib/voiceover.ts",
+          "frontend/src/App.tsx"
+        ]
+      },
+      {
+        "id": "REQ-4",
+        "summary": "Add a Text-to-Video tool page that accepts a text prompt and produces a simple generated video result entirely on the client (e.g., animated text/scene rendered in-browser and recorded), with a preview and a download option.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/TextToVideo.tsx",
+          "frontend/src/lib/clientVideoGen.ts",
+          "frontend/src/App.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/TextToVideo.tsx",
+          "frontend/src/lib/clientVideoGen.ts",
+          "frontend/src/App.tsx"
+        ]
+      },
+      {
+        "id": "REQ-5",
+        "summary": "Add basic user accounts using Internet Identity so clients can sign in and see their own generation history (prompts and resulting downloadable assets metadata) across sessions.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/LoginButton.tsx",
+          "frontend/src/components/ProfileSetupDialog.tsx",
+          "frontend/src/hooks/useCurrentUserProfile.ts",
+          "frontend/src/hooks/useGenHistory.ts",
+          "frontend/src/hooks/useAddGenRecord.ts",
+          "frontend/src/pages/MyHistory.tsx",
+          "frontend/src/components/RequireAuth.tsx",
+          "frontend/src/pages/TextToImage.tsx",
+          "frontend/src/pages/TextToVideo.tsx",
+          "frontend/src/pages/TextToVoiceover.tsx",
+          "frontend/src/lib/historyAssetStore.ts",
+          "frontend/src/App.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/LoginButton.tsx",
+          "frontend/src/components/ProfileSetupDialog.tsx",
+          "frontend/src/pages/MyHistory.tsx",
+          "frontend/src/components/RequireAuth.tsx",
+          "frontend/src/pages/TextToImage.tsx",
+          "frontend/src/pages/TextToVideo.tsx",
+          "frontend/src/pages/TextToVoiceover.tsx",
+          "frontend/src/lib/historyAssetStore.ts",
+          "frontend/src/App.tsx"
+        ]
+      },
+      {
+        "id": "REQ-6",
+        "summary": "Implement backend persistence in the single Motoko actor to store per-user generation records (type, prompt/text, createdAt, and references/identifiers needed by the frontend).",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-7",
+        "summary": "Provide a cohesive, distinct visual theme for the site (colors, typography, spacing, component styling) and apply it consistently across the landing page and all tool pages. Avoid default-looking UI.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/index.css",
+          "frontend/tailwind.config.js",
+          "frontend/src/index.css",
+          "frontend/src/components/ToolCard.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/index.css",
+          "frontend/tailwind.config.js",
+          "frontend/src/index.css",
+          "frontend/src/components/ToolCard.tsx"
+        ]
+      },
+      {
+        "id": "REQ-8",
+        "summary": "Add generated static brand assets (logo + hero illustration + tool icons) to the frontend and use them in the UI from the static assets folder (do not fetch images from the backend).",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/public/assets/generated/pnd-logo.dim_512x512.png",
+          "frontend/public/assets/generated/pnd-hero.dim_1600x900.png",
+          "frontend/public/assets/generated/pnd-tool-icons.dim_256x256.png",
+          "frontend/src/pages/Home.tsx",
+          "frontend/src/components/SiteHeader.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/public/assets/generated/pnd-logo.dim_512x512.png",
+          "frontend/public/assets/generated/pnd-hero.dim_1600x900.png",
+          "frontend/public/assets/generated/pnd-tool-icons.dim_256x256.png",
+          "frontend/src/pages/Home.tsx",
+          "frontend/src/components/SiteHeader.tsx"
+        ]
+      }
+    ]
+  },
+  "changedFiles": [
+    "backend/authorization/MixinAuthorization.mo",
+    "backend/authorization/access-control.mo",
+    "backend/main.mo",
+    "build-request.json",
+    "build-template/Dockerfile",
+    "build-template/LICENSE",
+    "build-template/README.md",
+    "build-template/deploy.sh",
+    "build-template/icp.yaml",
+    "build-template/package.json",
+    "build-template/pnpm-lock.yaml",
+    "build-template/pnpm-workspace.yaml",
+    "build-template/scripts/prune-unused-images.js",
+    "build-template/scripts/resize-images.js",
+    "build-template/src/backend/canister.yaml",
+    "build-template/src/backend/system-idl/aaaaa-aa.did",
+    "build-template/src/frontend/canister.yaml",
+    "build-template/src/frontend/components.json",
+    "build-template/src/frontend/env.json",
+    "build-template/src/frontend/eslint-rules/no-bigint-in-query-keys.js",
+    "build-template/src/frontend/eslint-rules/require-internet-identity-provider.js",
+    "build-template/src/frontend/eslint.config.js",
+    "build-template/src/frontend/package.json",
+    "build-template/src/frontend/postcss.config.js",
+    "build-template/src/frontend/src/components/ui/accordion.tsx",
+    "build-template/src/frontend/src/components/ui/alert-dialog.tsx",
+    "build-template/src/frontend/src/components/ui/alert.tsx",
+    "build-template/src/frontend/src/components/ui/aspect-ratio.tsx",
+    "build-template/src/frontend/src/components/ui/avatar.tsx",
+    "build-template/src/frontend/src/components/ui/badge.tsx",
+    "build-template/src/frontend/src/components/ui/breadcrumb.tsx",
+    "build-template/src/frontend/src/components/ui/button.tsx",
+    "build-template/src/frontend/src/components/ui/calendar.tsx",
+    "build-template/src/frontend/src/components/ui/card.tsx",
+    "build-template/src/frontend/src/components/ui/carousel.tsx",
+    "build-template/src/frontend/src/components/ui/chart.tsx",
+    "build-template/src/frontend/src/components/ui/checkbox.tsx",
+    "build-template/src/frontend/src/components/ui/collapsible.tsx",
+    "build-template/src/frontend/src/components/ui/command.tsx",
+    "build-template/src/frontend/src/components/ui/context-menu.tsx",
+    "build-template/src/frontend/src/components/ui/dialog.tsx",
+    "build-template/src/frontend/src/components/ui/drawer.tsx",
+    "build-template/src/frontend/src/components/ui/dropdown-menu.tsx",
+    "build-template/src/frontend/src/components/ui/form.tsx",
+    "build-template/src/frontend/src/components/ui/hover-card.tsx",
+    "build-template/src/frontend/src/components/ui/input-otp.tsx",
+    "build-template/src/frontend/src/components/ui/input.tsx",
+    "build-template/src/frontend/src/components/ui/label.tsx",
+    "build-template/src/frontend/src/components/ui/menubar.tsx",
+    "build-template/src/frontend/src/components/ui/navigation-menu.tsx",
+    "build-template/src/frontend/src/components/ui/pagination.tsx",
+    "build-template/src/frontend/src/components/ui/popover.tsx",
+    "build-template/src/frontend/src/components/ui/progress.tsx",
+    "build-template/src/frontend/src/components/ui/radio-group.tsx",
+    "build-template/src/frontend/src/components/ui/resizable.tsx",
+    "build-template/src/frontend/src/components/ui/scroll-area.tsx",
+    "build-template/src/frontend/src/components/ui/select.tsx",
+    "build-template/src/frontend/src/components/ui/separator.tsx",
+    "build-template/src/frontend/src/components/ui/sheet.tsx",
+    "build-template/src/frontend/src/components/ui/sidebar.tsx",
+    "build-template/src/frontend/src/components/ui/skeleton.tsx",
+    "build-template/src/frontend/src/components/ui/slider.tsx",
+    "build-template/src/frontend/src/components/ui/sonner.tsx",
+    "build-template/src/frontend/src/components/ui/switch.tsx",
+    "build-template/src/frontend/src/components/ui/table.tsx",
+    "build-template/src/frontend/src/components/ui/tabs.tsx",
+    "build-template/src/frontend/src/components/ui/textarea.tsx",
+    "build-template/src/frontend/src/components/ui/toggle-group.tsx",
+    "build-template/src/frontend/src/components/ui/toggle.tsx",
+    "build-template/src/frontend/src/components/ui/tooltip.tsx",
+    "build-template/src/frontend/src/hooks/use-mobile.tsx",
+    "build-template/src/frontend/src/lib/utils.ts",
+    "build-template/src/frontend/tsconfig.json",
+    "build-template/src/frontend/vite.config.js",
+    "build-template/tsconfig.json",
+    "caffeine.lock.json",
+    "feature_evidence.json",
+    "frontend-file-summaries.txt",
+    "frontend-implementation-plan.json",
+    "frontend/index.css",
+    "frontend/index.html",
+    "frontend/public/assets/generated/pnd-hero.dim_1600x900.png",
+    "frontend/public/assets/generated/pnd-logo.dim_512x512.png",
+    "frontend/public/assets/generated/pnd-tool-icons.dim_256x256.png",
+    "frontend/src/App.tsx",
+    "frontend/src/backend.d.ts",
+    "frontend/src/backend.ts",
+    "frontend/src/components/GeneratedAssetCard.tsx",
+    "frontend/src/components/LoginButton.tsx",
+    "frontend/src/components/ProfileSetupDialog.tsx",
+    "frontend/src/components/RequireAuth.tsx",
+    "frontend/src/components/SiteFooter.tsx",
+    "frontend/src/components/SiteHeader.tsx",
+    "frontend/src/components/ToolCard.tsx",
+    "frontend/src/config.ts",
+    "frontend/src/declarations/backend.did.d.ts",
+    "frontend/src/declarations/backend.did.js",
+    "frontend/src/hooks/useActor.ts",
+    "frontend/src/hooks/useInternetIdentity.ts",
+    "frontend/src/hooks/useQueries.ts",
+    "frontend/src/index.css",
+    "frontend/src/lib/clientImageGen.ts",
+    "frontend/src/lib/clientVideoGen.ts",
+    "frontend/src/lib/historyAssetStore.ts",
+    "frontend/src/lib/voiceover.ts",
+    "frontend/src/main.tsx",
+    "frontend/src/pages/Home.tsx",
+    "frontend/src/pages/MyHistory.tsx",
+    "frontend/src/pages/TextToImage.tsx",
+    "frontend/src/pages/TextToVideo.tsx",
+    "frontend/src/pages/TextToVoiceover.tsx",
+    "frontend/src/ui-summary.json",
+    "frontend/src/utils/StorageClient.ts",
+    "frontend/src/utils/urlParams.ts",
+    "frontend/tailwind.config.js",
+    "project_state.json",
+    "scratch/component-selection.json",
+    "spec.md",
+    "spec_vs_diff_report.json"
+  ]
+}
