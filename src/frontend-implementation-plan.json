@@ -1,48 +1,85 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "User profile editing (display name) for signed-in users",
+  "title": "Frontend retired-mode gating and admin shutdown controls",
   "requirements": [
     {
-      "id": "REQ-1",
-      "summary": "Provide an authenticated-user \"Edit Profile\" entry point and dialog to update display name after onboarding.",
+      "id": "REQ-4",
+      "summary": "Show a single public \"Site Retired\" experience for all routes when the backend reports retired=true, while preserving normal behavior when active.",
       "acceptanceCriteria": [
-        "When a user is signed in, there is a visible entry point labeled \"Edit Profile\" available from the main UI (e.g., header or account area).",
-        "Selecting \"Edit Profile\" opens a dialog or page that pre-fills the current saved name (if any) and allows changing it.",
-        "Submitting the form saves the updated name via the existing profile save flow and shows a success message.",
-        "After saving, any UI that depends on the caller profile reflects the updated name without requiring a full page reload.",
-        "If the user is not authenticated, the edit profile entry point is not shown (or is disabled with a clear sign-in requirement)."
+        "When the backend indicates retired=true, navigating to any existing route shows a single retired page with a clear English message (using the backend-provided public message if present).",
+        "When retired=true, primary navigation and tool entry points are not shown to non-admin users.",
+        "The retired screen does not require authentication to view.",
+        "If the backend is not retired, the app behaves exactly as before."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/EditProfileDialog.tsx",
+          "path": "frontend/src/hooks/useWebsiteStatus.ts",
           "operation": "create",
-          "description": "Create an EditProfileDialog composed from existing shadcn/ui primitives (do not modify files under frontend/src/components/ui). Use the authorization component’s frontend guidance by relying on existing authentication state (useInternetIdentity) and caller profile hooks (useGetCallerUserProfile, useSaveCallerUserProfile) to (1) prefill the current name, (2) allow editing, (3) save, and (4) show a success toast/message; invalidate/refetch should ensure the updated name is reflected without a full reload. Verify the component's usage instructions before implementing."
+          "description": "Add a React Query hook that reads backend website status (via getWebsiteStatus) and exposes loading/error states for retired-mode gating. Use it as the single source of truth for retired vs active UI decisions."
+        },
+        {
+          "path": "frontend/src/pages/SiteRetired.tsx",
+          "operation": "create",
+          "description": "Implement a public Site Retired screen that renders a clear shutdown message in English and displays the backend-provided public message when present. Compose existing shadcn/ui components (e.g., Card, Button) for layout and messaging. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Wire retired-mode gating into the main Layout: if website status is retired and the caller is not an admin, render the SiteRetired screen instead of the normal routed content (Outlet) for all existing routes (/, /text-to-image, /text-to-video, /text-to-voiceover, /my-history, /admin). Ensure the gating does not require authentication and does not change behavior when active."
         },
         {
           "path": "frontend/src/components/SiteHeader.tsx",
           "operation": "modify",
-          "description": "Add a signed-in-only, clearly labeled \"Edit Profile\" entry point in the header main UI that opens EditProfileDialog; hide (or disable with a clear sign-in requirement) when unauthenticated. Also fetch and display the current profile name in the header (e.g., next to account actions) so the name visibly updates after save via React Query cache invalidation. Verify the component's usage instructions before implementing."
+          "description": "Hide primary navigation/tool links for non-admin users when the site is retired (based on website status). Keep admin navigation accessible for authenticated admins. Compose existing shadcn/ui components as needed. Verify the component's usage instructions before implementing."
         }
       ]
     },
     {
-      "id": "REQ-2",
-      "summary": "Wire profile editing to the existing caller profile save flow and avoid introducing any new backend APIs or schema changes.",
+      "id": "REQ-5",
+      "summary": "Add admin-only controls on the existing Admin page to retire the site and purge all user data with confirmation and clear error handling.",
       "acceptanceCriteria": [
-        "The profile edit flow calls the existing backend method for saving the caller profile (no duplicate APIs).",
-        "No backend state schema changes are required for this feature."
+        "The Admin page shows controls to: (1) set the site to retired with an optional public message, and (2) purge all user data (only enabled/visible after retirement).",
+        "Both actions require an explicit confirmation (e.g., typing a confirmation phrase or a confirm dialog) before executing.",
+        "After successfully retiring the site, the UI reflects the new status without requiring a hard refresh.",
+        "Errors (e.g., non-admin, backend traps) are displayed to the admin in English via existing toast/error UI patterns."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/EditProfileDialog.tsx",
-          "operation": "modify",
-          "description": "Ensure the save action uses the existing profile save flow by calling the existing React Query mutation hook (useSaveCallerUserProfile) which invokes the backend saveCallerUserProfile method; do not add any new backend calls. Handle authorization failures gracefully (e.g., show an error toast if the backend rejects unauthenticated callers), per the authorization component guidance. Verify the component's usage instructions before implementing."
+          "path": "frontend/src/hooks/useWebsiteAdminActions.ts",
+          "operation": "create",
+          "description": "Add React Query mutations for admin actions that call backend retireWebsite(message | null), purgeData(), and (optionally) reactivateWebsite() to support admin testing. On success, invalidate the website status query so the UI updates without a hard refresh."
         },
         {
-          "path": "frontend/src/hooks/useQueries.ts",
+          "path": "frontend/src/pages/AdminHomeEditor.tsx",
           "operation": "modify",
-          "description": "Confirm the existing caller profile query key and invalidation behavior support immediate UI refresh after a successful save (e.g., currentUserProfile invalidation is sufficient). If needed, extend the hook ergonomics (without changing backend calls) to support the edit dialog’s success/error handling while continuing to call the same existing backend method. Verify the component's usage instructions before implementing."
+          "description": "Extend the existing Admin page with a new shutdown controls section: (1) retire site with optional public message and explicit confirmation, and (2) purge all user data with explicit confirmation (visible/enabled only when status is retired). Use existing toast patterns for success/error messaging and reuse the existing isAdmin guard. Compose existing shadcn/ui components (Card, Input, Textarea, Button, etc.). Verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "summary": "Apply a consistent neutral/gray shutdown theme for the retired screen and admin retirement section.",
+      "acceptanceCriteria": [
+        "The retired screen and admin retirement section share consistent styling (colors, typography, spacing).",
+        "No blue/purple-dominant palette is introduced unless already present; use a neutral/gray-based theme appropriate for a shutdown notice.",
+        "All user-facing text shown in these new UI surfaces is in English."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/index.css",
+          "operation": "modify",
+          "description": "Add a small set of reusable, neutral/gray shutdown-related utility classes (e.g., for retired banners/surfaces and emphasis text) to ensure the Site Retired screen and Admin shutdown controls share consistent spacing and typography without introducing new blue/purple-dominant colors."
+        },
+        {
+          "path": "frontend/src/pages/SiteRetired.tsx",
+          "operation": "modify",
+          "description": "Apply the new neutral/gray shutdown styling consistently on the retired screen using existing Tailwind tokens/classes (and any added shutdown utility classes). Compose existing shadcn/ui components. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/AdminHomeEditor.tsx",
+          "operation": "modify",
+          "description": "Apply the same neutral/gray shutdown styling to the new admin retirement/purge controls section so it visually matches the retired screen, while keeping the rest of the admin editor unchanged. Compose existing shadcn/ui components. Verify the component's usage instructions before implementing."
         }
       ]
     }

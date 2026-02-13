@@ -1,30 +1,63 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "New project",
+  "summary": "User requested to delete/terminate the website (project cancellation).",
   "architectural_notes": [],
   "known_issues": [],
   "isFixRequest": false,
   "existing_features": [
     {
-      "id": "feature-add-a-user-facing-way-for-an-authenticated-user-to-edit-their-profile-at-minimum-update-their-display-name-after-initial-onboarding",
-      "title": "Add a user-facing way for an authenticated user to edit their profile (at minimum, update their display name) after initial onboarding.",
+      "id": "feature-implement-a-frontend-site-retired-screen-that-replaces-the-normal-app-experience-when-the-backend-reports-the-site-is-retired-and-ensure-all-routes-text-to-image-text-to-video-text-to-voiceover-my-history-admin-render-the-retired-screen-for-non-admin-users",
+      "title": "Implement a frontend \"Site Retired\" screen that replaces the normal app experience when the backend reports the site is retired, and ensure all routes (/, /text-to-image, /text-to-video, /text-to-voiceover, /my-history, /admin) render the retired screen for non-admin users.",
       "reqIds": [
-        "REQ-1"
+        "REQ-4"
       ],
       "version": 1
     },
     {
-      "id": "feature-ensure-profile-editing-uses-the-existing-backend-profile-api-and-does-not-introduce-new-backend-endpoints-unless-strictly-necessary",
-      "title": "Ensure profile editing uses the existing backend profile API and does not introduce new backend endpoints unless strictly necessary.",
+      "id": "feature-add-an-admin-only-retire-site-and-purge-all-user-data-control-section-to-the-existing-admin-page-including-a-confirmation-step-to-prevent-accidental-retirement-purge",
+      "title": "Add an admin-only \"Retire site\" and \"Purge all user data\" control section to the existing Admin page, including a confirmation step to prevent accidental retirement/purge.",
       "reqIds": [
-        "REQ-2"
+        "REQ-5"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-choose-and-apply-a-coherent-visual-theme-for-the-site-retired-experience-typography-spacing-and-neutral-color-palette-and-use-it-consistently-on-the-retired-screen-and-admin-retirement-section",
+      "title": "Choose and apply a coherent visual theme for the \"Site Retired\" experience (typography, spacing, and neutral color palette) and use it consistently on the retired screen and admin retirement section.",
+      "reqIds": [
+        "REQ-6"
       ],
       "version": 1
     }
   ],
-  "new_feature_requests": [],
-  "projectName": "Add user profile editing (update name) for signed-in users",
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Add a canister-level \"site retired\" state that can be toggled by an administrator, and expose a public query to read the current site status (retired flag + optional public message).",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "When the site is retired, block all non-admin, non-status backend operations (e.g., generation history mutations/queries and profile operations) so the application behaves as effectively deleted from the user perspective.",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Add an admin-only backend operation to purge all stored user data (user profiles and generation history) to support “delete this website” as a data wipe, and make it available only when the site is retired.",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "status": "pending"
+    }
+  ],
+  "projectName": "Retire (disable) the website and block access to all features",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

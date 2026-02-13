@@ -2,11 +2,13 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-add-a-user-facing-way-for-an-authenticated-user-to-edit-their-profile-at-minimum-update-their-display-name-after-initial-onboarding",
-      "featureTitle": "Add a user-facing way for an authenticated user to edit their profile (at minimum, update their display name) after initial onboarding.",
+      "featureId": "feature-implement-a-frontend-site-retired-screen-that-replaces-the-normal-app-experience-when-the-backend-reports-the-site-is-retired-and-ensure-all-routes-text-to-image-text-to-video-text-to-voiceover-my-history-admin-render-the-retired-screen-for-non-admin-users",
+      "featureTitle": "Implement a frontend \"Site Retired\" screen that replaces the normal app experience when the backend reports the site is retired, and ensure all routes (/, /text-to-image, /text-to-video, /text-to-voiceover, /my-history, /admin) render the retired screen for non-admin users.",
       "files": [
-        "frontend/src/components/EditProfileDialog.tsx",
-        "frontend/src/components/SiteHeader.tsx"
+        "frontend/src/App.tsx",
+        "frontend/src/components/SiteHeader.tsx",
+        "frontend/src/hooks/useWebsiteStatus.ts",
+        "frontend/src/pages/SiteRetired.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -17,15 +19,16 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-1"
+        "REQ-4"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-ensure-profile-editing-uses-the-existing-backend-profile-api-and-does-not-introduce-new-backend-endpoints-unless-strictly-necessary",
-      "featureTitle": "Ensure profile editing uses the existing backend profile API and does not introduce new backend endpoints unless strictly necessary.",
+      "featureId": "feature-add-an-admin-only-retire-site-and-purge-all-user-data-control-section-to-the-existing-admin-page-including-a-confirmation-step-to-prevent-accidental-retirement-purge",
+      "featureTitle": "Add an admin-only \"Retire site\" and \"Purge all user data\" control section to the existing Admin page, including a confirmation step to prevent accidental retirement/purge.",
       "files": [
-        "frontend/src/components/EditProfileDialog.tsx"
+        "frontend/src/hooks/useWebsiteAdminActions.ts",
+        "frontend/src/pages/AdminHomeEditor.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -36,7 +39,28 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-2"
+        "REQ-5"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-choose-and-apply-a-coherent-visual-theme-for-the-site-retired-experience-typography-spacing-and-neutral-color-palette-and-use-it-consistently-on-the-retired-screen-and-admin-retirement-section",
+      "featureTitle": "Choose and apply a coherent visual theme for the \"Site Retired\" experience (typography, spacing, and neutral color palette) and use it consistently on the retired screen and admin retirement section.",
+      "files": [
+        "frontend/src/index.css",
+        "frontend/src/pages/AdminHomeEditor.tsx",
+        "frontend/src/pages/SiteRetired.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-6"
       ],
       "confidence": "high"
     }

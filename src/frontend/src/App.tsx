@@ -9,14 +9,32 @@ import TextToVideo from './pages/TextToVideo';
 import TextToVoiceover from './pages/TextToVoiceover';
 import MyHistory from './pages/MyHistory';
 import AdminHomeEditor from './pages/AdminHomeEditor';
+import SiteRetired from './pages/SiteRetired';
 import ProfileSetupDialog from './components/ProfileSetupDialog';
+import { useWebsiteStatus } from './hooks/useWebsiteStatus';
+import { useIsCallerAdmin } from './hooks/useAdmin';
+import { Loader2 } from 'lucide-react';
 
 function Layout() {
+  const { data: websiteStatus, isLoading: statusLoading } = useWebsiteStatus();
+  const { data: isAdmin, isLoading: adminLoading } = useIsCallerAdmin();
+
+  const isRetired = websiteStatus?.__kind__ === 'retired';
+  const showRetiredScreen = isRetired && !isAdmin;
+
+  if (statusLoading || adminLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-screen flex-col">
       <SiteHeader />
       <main className="flex-1">
-        <Outlet />
+        {showRetiredScreen ? <SiteRetired /> : <Outlet />}
       </main>
       <SiteFooter />
       <ProfileSetupDialog />

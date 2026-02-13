@@ -40,6 +40,10 @@ export const HomePageContent = IDL.Record({
   'premiumSection' : IDL.Text,
   'freeSection' : IDL.Text,
 });
+export const WebsiteState = IDL.Variant({
+  'active' : IDL.Null,
+  'retired' : IDL.Record({ 'message' : IDL.Opt(IDL.Text) }),
+});
 
 export const idlService = IDL.Service({
   '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
@@ -55,7 +59,11 @@ export const idlService = IDL.Service({
       [IDL.Opt(UserProfile)],
       ['query'],
     ),
+  'getWebsiteStatus' : IDL.Func([], [WebsiteState], ['query']),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
+  'purgeData' : IDL.Func([], [], []),
+  'reactivateWebsite' : IDL.Func([], [], []),
+  'retireWebsite' : IDL.Func([IDL.Opt(IDL.Text)], [], []),
   'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
   'updateGenRecord' : IDL.Func([IDL.Nat, GenType, IDL.Text, IDL.Text], [], []),
   'updateHomepageContent' : IDL.Func([HomePageContent], [], []),
@@ -96,6 +104,10 @@ export const idlFactory = ({ IDL }) => {
     'premiumSection' : IDL.Text,
     'freeSection' : IDL.Text,
   });
+  const WebsiteState = IDL.Variant({
+    'active' : IDL.Null,
+    'retired' : IDL.Record({ 'message' : IDL.Opt(IDL.Text) }),
+  });
   
   return IDL.Service({
     '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
@@ -111,7 +123,11 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Opt(UserProfile)],
         ['query'],
       ),
+    'getWebsiteStatus' : IDL.Func([], [WebsiteState], ['query']),
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
+    'purgeData' : IDL.Func([], [], []),
+    'reactivateWebsite' : IDL.Func([], [], []),
+    'retireWebsite' : IDL.Func([IDL.Opt(IDL.Text)], [], []),
     'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
     'updateGenRecord' : IDL.Func(
         [IDL.Nat, GenType, IDL.Text, IDL.Text],

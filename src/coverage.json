@@ -1,50 +1,103 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-11T04:28:15.553Z",
+  "generatedAt": "2026-02-11T14:26:30.883Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 2,
-    "implemented": 2,
+    "total": 6,
+    "implemented": 3,
     "items": [
       {
         "id": "REQ-1",
-        "summary": "Add a user-facing way for an authenticated user to edit their profile (at minimum, update their display name) after initial onboarding.",
+        "summary": "Add a canister-level \"site retired\" state that can be toggled by an administrator, and expose a public query to read the current site status (retired flag + optional public message).",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-2",
+        "summary": "When the site is retired, block all non-admin, non-status backend operations (e.g., generation history mutations/queries and profile operations) so the application behaves as effectively deleted from the user perspective.",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-3",
+        "summary": "Add an admin-only backend operation to purge all stored user data (user profiles and generation history) to support “delete this website” as a data wipe, and make it available only when the site is retired.",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-4",
+        "summary": "Implement a frontend \"Site Retired\" screen that replaces the normal app experience when the backend reports the site is retired, and ensure all routes (/, /text-to-image, /text-to-video, /text-to-voiceover, /my-history, /admin) render the retired screen for non-admin users.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/EditProfileDialog.tsx",
+          "frontend/src/hooks/useWebsiteStatus.ts",
+          "frontend/src/pages/SiteRetired.tsx",
+          "frontend/src/App.tsx",
           "frontend/src/components/SiteHeader.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/components/EditProfileDialog.tsx",
+          "frontend/src/hooks/useWebsiteStatus.ts",
+          "frontend/src/pages/SiteRetired.tsx",
+          "frontend/src/App.tsx",
           "frontend/src/components/SiteHeader.tsx"
         ]
       },
       {
-        "id": "REQ-2",
-        "summary": "Ensure profile editing uses the existing backend profile API and does not introduce new backend endpoints unless strictly necessary.",
+        "id": "REQ-5",
+        "summary": "Add an admin-only \"Retire site\" and \"Purge all user data\" control section to the existing Admin page, including a confirmation step to prevent accidental retirement/purge.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/EditProfileDialog.tsx",
-          "frontend/src/hooks/useQueries.ts"
+          "frontend/src/hooks/useWebsiteAdminActions.ts",
+          "frontend/src/pages/AdminHomeEditor.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/components/EditProfileDialog.tsx"
+          "frontend/src/hooks/useWebsiteAdminActions.ts",
+          "frontend/src/pages/AdminHomeEditor.tsx"
+        ]
+      },
+      {
+        "id": "REQ-6",
+        "summary": "Choose and apply a coherent visual theme for the \"Site Retired\" experience (typography, spacing, and neutral color palette) and use it consistently on the retired screen and admin retirement section.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/index.css",
+          "frontend/src/pages/SiteRetired.tsx",
+          "frontend/src/pages/AdminHomeEditor.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/index.css",
+          "frontend/src/pages/SiteRetired.tsx",
+          "frontend/src/pages/AdminHomeEditor.tsx"
         ]
       }
     ]
   },
   "changedFiles": [
+    "backend/main.mo",
+    "backend/migration.mo",
     "build-request.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/components/EditProfileDialog.tsx",
+    "frontend/src/App.tsx",
+    "frontend/src/backend.d.ts",
+    "frontend/src/backend.ts",
     "frontend/src/components/SiteHeader.tsx",
+    "frontend/src/declarations/backend.did.d.ts",
+    "frontend/src/declarations/backend.did.js",
+    "frontend/src/hooks/useWebsiteAdminActions.ts",
+    "frontend/src/hooks/useWebsiteStatus.ts",
+    "frontend/src/index.css",
+    "frontend/src/pages/AdminHomeEditor.tsx",
+    "frontend/src/pages/SiteRetired.tsx",
     "frontend/src/utils/urlParams.ts",
+    "frontend/tailwind.config.js",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

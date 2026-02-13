@@ -15,7 +15,7 @@ export default function SiteFooter() {
           
           <div className="flex flex-col items-center gap-2 text-center text-sm text-muted-foreground">
             <p>© {currentYear} PIXEL NOVA DIGITALS. All rights reserved.</p>
-            <p>Presented by ABHISHEK YADAV</p>
+            <p>by ABHISHEK YADAV</p>
           </div>
         </div>
       </div>

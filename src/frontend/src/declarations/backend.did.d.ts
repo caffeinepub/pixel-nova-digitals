@@ -38,6 +38,8 @@ export interface UserProfile { 'name' : string }
 export type UserRole = { 'admin' : null } |
   { 'user' : null } |
   { 'guest' : null };
+export type WebsiteState = { 'active' : null } |
+  { 'retired' : { 'message' : [] | [string] } };
 export interface _SERVICE {
   '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
   'addGenRecord' : ActorMethod<[GenType, string, string], bigint>,
@@ -48,7 +50,11 @@ export interface _SERVICE {
   'getGenHistory' : ActorMethod<[], Array<GenRecordEntry>>,
   'getHomepageContent' : ActorMethod<[], HomePageContent>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
+  'getWebsiteStatus' : ActorMethod<[], WebsiteState>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
+  'purgeData' : ActorMethod<[], undefined>,
+  'reactivateWebsite' : ActorMethod<[], undefined>,
+  'retireWebsite' : ActorMethod<[[] | [string]], undefined>,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
   'updateGenRecord' : ActorMethod<[bigint, GenType, string, string], undefined>,
   'updateHomepageContent' : ActorMethod<[HomePageContent], undefined>,

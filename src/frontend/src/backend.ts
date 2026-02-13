@@ -96,18 +96,27 @@ export interface HomePageContent {
     premiumSection: string;
     freeSection: string;
 }
-export interface Branding {
-    tagLine: string;
-    heroBadge: string;
-    logoFile?: string;
-    brandName: string;
-}
 export interface GenRecordEntry {
     metadata: string;
     createdAt: bigint;
     type: GenType;
     recordId: bigint;
     prompt: string;
+}
+export type WebsiteState = {
+    __kind__: "active";
+    active: null;
+} | {
+    __kind__: "retired";
+    retired: {
+        message?: string;
+    };
+};
+export interface Branding {
+    tagLine: string;
+    heroBadge: string;
+    logoFile?: string;
+    brandName: string;
 }
 export interface UserProfile {
     name: string;
@@ -133,12 +142,16 @@ export interface backendInterface {
     getGenHistory(): Promise<Array<GenRecordEntry>>;
     getHomepageContent(): Promise<HomePageContent>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
+    getWebsiteStatus(): Promise<WebsiteState>;
     isCallerAdmin(): Promise<boolean>;
+    purgeData(): Promise<void>;
+    reactivateWebsite(): Promise<void>;
+    retireWebsite(message: string | null): Promise<void>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
     updateGenRecord(recordId: bigint, newType: GenType, newPrompt: string, newMetadata: string): Promise<void>;
     updateHomepageContent(content: HomePageContent): Promise<void>;
 }
-import type { Branding as _Branding, GenRecordEntry as _GenRecordEntry, GenType as _GenType, HomePageContent as _HomePageContent, UserProfile as _UserProfile, UserRole as _UserRole } from "./declarations/backend.did.d.ts";
+import type { Branding as _Branding, GenRecordEntry as _GenRecordEntry, GenType as _GenType, HomePageContent as _HomePageContent, UserProfile as _UserProfile, UserRole as _UserRole, WebsiteState as _WebsiteState } from "./declarations/backend.did.d.ts";
 export class Backend implements backendInterface {
     constructor(private actor: ActorSubclass<_SERVICE>, private _uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, private _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, private processError?: (error: unknown) => never){}
     async _initializeAccessControlWithSecret(arg0: string): Promise<void> {
@@ -267,6 +280,20 @@ export class Backend implements backendInterface {
             return from_candid_opt_n5(this._uploadFile, this._downloadFile, result);
         }
     }
+    async getWebsiteStatus(): Promise<WebsiteState> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getWebsiteStatus();
+                return from_candid_WebsiteState_n18(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getWebsiteStatus();
+            return from_candid_WebsiteState_n18(this._uploadFile, this._downloadFile, result);
+        }
+    }
     async isCallerAdmin(): Promise<boolean> {
         if (this.processError) {
             try {
@@ -278,6 +305,48 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.isCallerAdmin();
+            return result;
+        }
+    }
+    async purgeData(): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.purgeData();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.purgeData();
+            return result;
+        }
+    }
+    async reactivateWebsite(): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.reactivateWebsite();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.reactivateWebsite();
+            return result;
+        }
+    }
+    async retireWebsite(arg0: string | null): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.retireWebsite(to_candid_opt_n21(this._uploadFile, this._downloadFile, arg0));
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.retireWebsite(to_candid_opt_n21(this._uploadFile, this._downloadFile, arg0));
             return result;
         }
     }
@@ -312,14 +381,14 @@ export class Backend implements backendInterface {
     async updateHomepageContent(arg0: HomePageContent): Promise<void> {
         if (this.processError) {
             try {
-                const result = await this.actor.updateHomepageContent(to_candid_HomePageContent_n18(this._uploadFile, this._downloadFile, arg0));
+                const result = await this.actor.updateHomepageContent(to_candid_HomePageContent_n22(this._uploadFile, this._downloadFile, arg0));
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.updateHomepageContent(to_candid_HomePageContent_n18(this._uploadFile, this._downloadFile, arg0));
+            const result = await this.actor.updateHomepageContent(to_candid_HomePageContent_n22(this._uploadFile, this._downloadFile, arg0));
             return result;
         }
     }
@@ -338,6 +407,9 @@ function from_candid_HomePageContent_n13(_uploadFile: (file: ExternalBlob) => Pr
 }
 function from_candid_UserRole_n6(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _UserRole): UserRole {
     return from_candid_variant_n7(_uploadFile, _downloadFile, value);
+}
+function from_candid_WebsiteState_n18(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _WebsiteState): WebsiteState {
+    return from_candid_variant_n19(_uploadFile, _downloadFile, value);
 }
 function from_candid_opt_n17(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [string]): string | null {
     return value.length === 0 ? null : value[0];
@@ -405,6 +477,15 @@ function from_candid_record_n16(_uploadFile: (file: ExternalBlob) => Promise<Uin
         brandName: value.brandName
     };
 }
+function from_candid_record_n20(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    message: [] | [string];
+}): {
+    message?: string;
+} {
+    return {
+        message: record_opt_to_undefined(from_candid_opt_n17(_uploadFile, _downloadFile, value.message))
+    };
+}
 function from_candid_variant_n12(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
     video: null;
 } | {
@@ -415,6 +496,29 @@ function from_candid_variant_n12(_uploadFile: (file: ExternalBlob) => Promise<Ui
     image: null;
 }): GenType {
     return "video" in value ? GenType.video : "text" in value ? GenType.text : "sound" in value ? GenType.sound : "image" in value ? GenType.image : value;
+}
+function from_candid_variant_n19(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    active: null;
+} | {
+    retired: {
+        message: [] | [string];
+    };
+}): {
+    __kind__: "active";
+    active: null;
+} | {
+    __kind__: "retired";
+    retired: {
+        message?: string;
+    };
+} {
+    return "active" in value ? {
+        __kind__: "active",
+        active: value.active
+    } : "retired" in value ? {
+        __kind__: "retired",
+        retired: from_candid_record_n20(_uploadFile, _downloadFile, value.retired)
+    } : value;
 }
 function from_candid_variant_n7(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
     admin: null;
@@ -428,19 +532,22 @@ function from_candid_variant_n7(_uploadFile: (file: ExternalBlob) => Promise<Uin
 function from_candid_vec_n8(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<_GenRecordEntry>): Array<GenRecordEntry> {
     return value.map((x)=>from_candid_GenRecordEntry_n9(_uploadFile, _downloadFile, x));
 }
-function to_candid_Branding_n20(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Branding): _Branding {
-    return to_candid_record_n21(_uploadFile, _downloadFile, value);
+function to_candid_Branding_n24(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Branding): _Branding {
+    return to_candid_record_n25(_uploadFile, _downloadFile, value);
 }
 function to_candid_GenType_n1(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: GenType): _GenType {
     return to_candid_variant_n2(_uploadFile, _downloadFile, value);
 }
-function to_candid_HomePageContent_n18(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: HomePageContent): _HomePageContent {
-    return to_candid_record_n19(_uploadFile, _downloadFile, value);
+function to_candid_HomePageContent_n22(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: HomePageContent): _HomePageContent {
+    return to_candid_record_n23(_uploadFile, _downloadFile, value);
 }
 function to_candid_UserRole_n3(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: UserRole): _UserRole {
     return to_candid_variant_n4(_uploadFile, _downloadFile, value);
 }
-function to_candid_record_n19(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+function to_candid_opt_n21(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: string | null): [] | [string] {
+    return value === null ? candid_none() : candid_some(value);
+}
+function to_candid_record_n23(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
     heroSubtitle: string;
     branding: Branding;
     heroTitle: string;
@@ -455,13 +562,13 @@ function to_candid_record_n19(_uploadFile: (file: ExternalBlob) => Promise<Uint8
 } {
     return {
         heroSubtitle: value.heroSubtitle,
-        branding: to_candid_Branding_n20(_uploadFile, _downloadFile, value.branding),
+        branding: to_candid_Branding_n24(_uploadFile, _downloadFile, value.branding),
         heroTitle: value.heroTitle,
         premiumSection: value.premiumSection,
         freeSection: value.freeSection
     };
 }
-function to_candid_record_n21(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+function to_candid_record_n25(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
     tagLine: string;
     heroBadge: string;
     logoFile?: string;

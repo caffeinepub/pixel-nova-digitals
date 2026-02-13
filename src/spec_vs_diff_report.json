@@ -1,42 +1,112 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-11T04:28:15.551Z",
-  "summary": "Diff adds an Edit Profile dialog and wires an Edit Profile entry point into the SiteHeader account dropdown for authenticated users. It appears to reuse existing profile query/mutation hooks, with no backend changes shown. Some acceptance criteria are not clearly met based on the diff, and there are unrelated URL parameter utility changes.",
+  "generatedAt": "2026-02-11T14:26:30.879Z",
+  "summary": "Diff implements a frontend retired screen, route gating, and a neutral retired theme, plus introduces hooks for website status and admin actions. Backend introduces a WebsiteState type, migration, and guards via requireActiveForNonAdmin in some profile methods, but the diff is truncated so several backend/admin requirements cannot be fully verified from the provided evidence.",
   "missing_requirements": [
     {
       "id": "REQ-1",
-      "requirement": "When a user is signed in, there is a visible entry point labeled \"Edit Profile\" available from the main UI.",
-      "reason": "The header only renders the account dropdown (which contains the Edit Profile entry point) when `isAuthenticated && userProfile` is truthy. If a user is authenticated but `userProfile` is not yet loaded/available, there may be no visible \"Edit Profile\" entry point.",
+      "requirement": "Backend exposes a public query to read current site status (retired flag + optional public message) and an admin-only update method to set retired state/message; non-admin callers cannot change retired state.",
+      "reason": "Frontend calls actor.getWebsiteStatus() and actor.retireWebsite(message), but the backend diff snippet does not show the definitions/authorization checks for getWebsiteStatus/retireWebsite (or how admins are determined for that operation).",
       "evidence": [
-        "frontend/src/components/SiteHeader.tsx"
+        "frontend/src/hooks/useWebsiteStatus.ts",
+        "frontend/src/hooks/useWebsiteAdminActions.ts",
+        "backend/main.mo (truncated)"
       ]
     },
     {
-      "id": "REQ-1",
-      "requirement": "After saving, any UI that depends on the caller profile reflects the updated name without requiring a full page reload.",
-      "reason": "The dialog calls `useSaveCallerUserProfile().mutate(...)` and closes on success, but the diff does not show any explicit React Query cache update/invalidation or refetch to ensure `useGetCallerUserProfile()` consumers (e.g., SiteHeader display name) update immediately.",
+      "id": "REQ-2",
+      "requirement": "When retired, block all non-admin, non-status backend operations (generation history get/add/update/delete; profile get/save) with a clear English 'site is retired' error; admin access should still work; homepage content query should still work or be replaced safely.",
+      "reason": "Some profile methods call requireActiveForNonAdmin(caller), but the diff does not show the implementation of requireActiveForNonAdmin nor the generation history APIs (get/add/update/delete) to confirm they all trap with the required English retired message for non-admins while allowing admins.",
       "evidence": [
-        "frontend/src/components/EditProfileDialog.tsx",
-        "frontend/src/components/SiteHeader.tsx"
+        "backend/main.mo (truncated)"
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "requirement": "Admin-only purge operation that deletes all user profiles and generation history, only allowed when retired; rejected for non-admin callers and when not retired.",
+      "reason": "Frontend calls actor.purgeData(), but backend purgeData implementation and its admin/retired-state enforcement are not shown in the provided backend diff snippet.",
+      "evidence": [
+        "frontend/src/hooks/useWebsiteAdminActions.ts",
+        "backend/main.mo (truncated)"
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "requirement": "When retired=true, all listed routes render the retired screen for non-admin users, without requiring authentication; primary navigation and tool entry points are not shown to non-admin users.",
+      "reason": "App.tsx gates the Outlet behind SiteRetired for non-admins, and SiteHeader hides the navigation, but the header/footer (and other entry points like ToolCards on Home) may still render because Layout always renders <SiteHeader /> and <SiteFooter /> even when retired. The diff does not show Home/tool entry points being hidden when retired.",
+      "evidence": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/SiteHeader.tsx (truncated)",
+        "frontend-file-summaries.txt (mentions Home/ToolCard but does not show retired gating there)"
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "requirement": "Admin page includes admin-only controls to retire site (optional public message) and purge all user data (enabled/visible only after retirement), both with explicit confirmation; UI updates after retire without refresh; errors shown via existing toast/error patterns.",
+      "reason": "AdminHomeEditor.tsx shows state for retireMessage/confirmText and imports AlertDialog plus retire/purge hooks, but the diff is truncated before showing the full control section, confirmation dialogs, conditional enablement of purge-after-retire, and status refresh behavior in the UI.",
+      "evidence": [
+        "frontend/src/pages/AdminHomeEditor.tsx (truncated)",
+        "frontend/src/hooks/useWebsiteAdminActions.ts"
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "requirement": "Retired screen and admin retirement section share consistent neutral/gray styling; avoid introducing blue/purple-dominant palette.",
+      "reason": "Retired theme tokens are added and SiteRetired uses them, but the diff also changes global theme tokens (e.g., --primary/--accent) to warm orange/ember tones and adds glow shadows/animations; the truncated Admin page diff does not show whether the retirement section uses the same retired tokens for consistent shutdown styling.",
+      "evidence": [
+        "frontend/src/index.css",
+        "frontend/tailwind.config.js",
+        "frontend/src/pages/SiteRetired.tsx",
+        "frontend/src/pages/AdminHomeEditor.tsx (truncated)"
       ]
     }
   ],
   "hallucinated_features": [
     {
-      "description": "Expanded URL parameter utilities including sessionStorage persistence and hash query parsing/cleanup helpers.",
-      "reason": "BuildRequest is focused on adding profile editing UI using existing profile APIs; changes to URL param/session storage utilities are not requested by REQ-1/REQ-2.",
+      "description": "Ability to reactivate the website (useReactivateWebsite hook calling actor.reactivateWebsite).",
+      "reason": "BuildRequest only asked to retire/disable and optionally purge; it did not request a reactivation feature or backend method.",
       "evidence": [
-        "frontend/src/utils/urlParams.ts"
+        "frontend/src/hooks/useWebsiteAdminActions.ts"
+      ]
+    },
+    {
+      "description": "New URL parameter/session persistence utilities suggesting admin tokens in URL/sessionStorage (e.g., caffeineAdminToken).",
+      "reason": "BuildRequest explicitly disallows adding third-party auth/external storage and does not request URL/session-based admin token handling; this appears unrelated to retiring/purging.",
+      "evidence": [
+        "frontend/src/utils/urlParams.ts (truncated)"
+      ]
+    },
+    {
+      "description": "Global visual re-theming beyond the retired experience (warm orange/ember primary/accent colors, new typography/fonts, glow shadows, animations).",
+      "reason": "REQ-6 asks for a coherent neutral theme specifically for the 'Site Retired' experience and admin retirement section; broad application-wide theme changes are not requested and risk violating the 'do not redesign beyond what is necessary' constraint.",
+      "evidence": [
+        "frontend/src/index.css",
+        "frontend/tailwind.config.js"
+      ]
+    },
+    {
+      "description": "Backend homepage default branding content changes (e.g., heroBadge text and logo file).",
+      "reason": "BuildRequest focuses on retiring/disabled mode and data purge; changing marketing/branding defaults is not requested.",
+      "evidence": [
+        "backend/main.mo (truncated)"
       ]
     }
   ],
-  "confidence": 0.63,
+  "confidence": 0.66,
   "changed_files": [
+    "backend/main.mo",
+    "backend/migration.mo",
     "frontend-file-summaries.txt",
-    "frontend/src/components/EditProfileDialog.tsx",
+    "frontend/src/App.tsx",
     "frontend/src/components/SiteHeader.tsx",
+    "frontend/src/hooks/useWebsiteAdminActions.ts",
+    "frontend/src/hooks/useWebsiteStatus.ts",
+    "frontend/src/index.css",
+    "frontend/src/pages/AdminHomeEditor.tsx",
+    "frontend/src/pages/SiteRetired.tsx",
     "frontend/src/utils/urlParams.ts",
+    "frontend/tailwind.config.js",
     "project_state.json"
   ]
 }

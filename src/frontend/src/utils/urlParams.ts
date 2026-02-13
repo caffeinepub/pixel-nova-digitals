@@ -208,33 +208,40 @@ export function getSecretParameter(paramName: string): string | null {
 }
 
 /**
- * Encodes re-edit parameters for URL navigation
- * Used when navigating from history to a tool page with prefilled data
- *
+ * Encodes re-edit parameters for navigation from history to tool pages
+ * 
  * @param recordId - The record ID to re-edit
- * @param prompt - The original prompt text
+ * @param prompt - The original prompt
  * @returns URL-encoded query string
  */
 export function encodeReEditParams(recordId: bigint, prompt: string): string {
     const params = new URLSearchParams();
-    params.set('recordId', recordId.toString());
-    params.set('prompt', prompt);
+    params.set('reEditId', recordId.toString());
+    params.set('reEditPrompt', prompt);
     return params.toString();
 }
 
 /**
  * Parses re-edit parameters from URL search params
- * Used in tool pages to detect and load re-edit mode
- *
- * @param searchParams - URLSearchParams object from the current URL
- * @returns Object containing recordId (as bigint) and prompt, or nulls if not found
+ * 
+ * @param searchParams - URLSearchParams object
+ * @returns Object with recordId and prompt, or nulls if not present
  */
 export function parseReEditParams(searchParams: URLSearchParams): { recordId: bigint | null; prompt: string | null } {
-    const recordIdStr = searchParams.get('recordId');
-    const prompt = searchParams.get('prompt');
-
-    return {
-        recordId: recordIdStr ? BigInt(recordIdStr) : null,
-        prompt: prompt,
-    };
+    const recordIdStr = searchParams.get('reEditId');
+    const prompt = searchParams.get('reEditPrompt');
+    
+    if (recordIdStr && prompt) {
+        try {
+            return {
+                recordId: BigInt(recordIdStr),
+                prompt,
+            };
+        } catch (error) {
+            console.error('Failed to parse re-edit record ID:', error);
+            return { recordId: null, prompt: null };
+        }
+    }
+    
+    return { recordId: null, prompt: null };
 }

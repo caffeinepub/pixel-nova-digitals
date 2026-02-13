@@ -37,6 +37,12 @@
         --sidebar-accent-foreground: 0.2 0 0;
         --sidebar-border: 0.88 0 0;
         --sidebar-ring: 0.55 0.18 35;
+        
+        /* Retired/Shutdown theme - neutral gray tones */
+        --retired-surface: 0.96 0 0;
+        --retired-foreground: 0.45 0 0;
+        --retired-border: 0.85 0 0;
+        --retired-emphasis: 0.35 0 0;
     }
 
     .dark {
@@ -72,6 +78,12 @@
         --sidebar-accent-foreground: 0.95 0 0;
         --sidebar-border: 0.3 0 0;
         --sidebar-ring: 0.7 0.22 40;
+        
+        /* Retired/Shutdown theme - neutral gray tones for dark mode */
+        --retired-surface: 0.22 0 0;
+        --retired-foreground: 0.65 0 0;
+        --retired-border: 0.35 0 0;
+        --retired-emphasis: 0.75 0 0;
     }
 
     * {
@@ -89,3 +101,22 @@
 }
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+
+/* Retired/Shutdown utility classes */
+@layer utilities {
+    .bg-retired-surface {
+        background-color: oklch(var(--retired-surface));
+    }
+    
+    .text-retired-foreground {
+        color: oklch(var(--retired-foreground));
+    }
+    
+    .border-retired-border {
+        border-color: oklch(var(--retired-border));
+    }
+    
+    .text-retired-emphasis {
+        color: oklch(var(--retired-emphasis));
+    }
+}

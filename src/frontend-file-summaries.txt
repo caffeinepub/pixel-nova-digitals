@@ -1,9 +1,9 @@
 {
-  "frontend/src/App.tsx": "Main application component with TanStack Router setup including new /admin route, theme provider, and layout structure with header, footer, and profile setup dialog.",
-  "frontend/src/index.css": "Global styles with custom OKLCH color system using warm orange/ember tones as primary colors, custom fonts (Space Grotesk for headings, Inter for body), and animation keyframes.",
-  "frontend/tailwind.config.js": "Tailwind configuration extended with custom color tokens, glow shadows, and fade-in animations to support the distinctive warm creative theme.",
-  "frontend/src/components/SiteHeader.tsx": "Responsive header with navigation links, mobile menu, login button, and new user profile dropdown menu (desktop) and profile section (mobile) that displays the current user's name and provides access to the edit profile dialog.",
-  "frontend/src/components/SiteFooter.tsx": "Footer component displaying branding, copyright, and \"Presented by ABHISHEK YADAV\" attribution text.",
+  "frontend/src/App.tsx": "Main application component with TanStack Router setup that gates all routes behind a retired screen for non-admin users when the website is retired, while preserving normal behavior when active.",
+  "frontend/src/index.css": "Global styles with custom OKLCH color system using warm orange/ember tones as primary colors, custom fonts, and new neutral gray retired/shutdown theme tokens for both light and dark modes.",
+  "frontend/tailwind.config.js": "Tailwind configuration extended with custom color tokens including new retired theme colors, glow shadows, and fade-in animations to support the distinctive warm creative theme and shutdown UI.",
+  "frontend/src/components/SiteHeader.tsx": "Responsive header with navigation links, mobile menu, login button, and user profile dropdown that hides primary navigation for non-admin users when the site is retired.",
+  "frontend/src/components/SiteFooter.tsx": "Footer component displaying branding, copyright, and \"by ABHISHEK YADAV\" attribution text.",
   "frontend/src/components/LoginButton.tsx": "Authentication button component that handles Internet Identity login/logout with loading states and clears query cache on logout.",
   "frontend/src/components/ProfileSetupDialog.tsx": "Modal dialog that prompts new users to enter their name on first login, preventing modal flash with proper loading state handling.",
   "frontend/src/components/RequireAuth.tsx": "Authentication gate component that shows a friendly sign-in prompt when users try to access protected features while unauthenticated.",
@@ -21,8 +21,11 @@
   "frontend/src/lib/historyAssetStore.ts": "IndexedDB wrapper for storing and retrieving generated asset blobs locally, enabling preview functionality in history page.",
   "frontend/src/hooks/useAdmin.ts": "React Query hook to check if the current caller is an admin using the backend isCallerAdmin method.",
   "frontend/src/hooks/useHomepageContent.ts": "React Query hooks for fetching and updating homepage content from the backend with proper cache invalidation.",
-  "frontend/src/lib/homepageDefaults.ts": "Centralized default homepage content including complete branding object (heroBadge, brandName, tagLine, logoFile) with deep merge utility function that safely handles missing/partial backend data.",
-  "frontend/src/pages/AdminHomeEditor.tsx": "Admin-only page for editing all homepage content including new branding fields (brand name, tagline, logo source, hero badge) with authentication gate, access control check, and proper form state initialization handling partial backend data.",
-  "frontend/src/utils/urlParams.ts": "Utility functions for parsing and managing URL parameters including secret handling, session storage, and new re-edit parameter encoding/decoding functions for navigation between history and tool pages.",
-  "frontend/src/components/EditProfileDialog.tsx": "Dialog component for editing user profile name with form validation, success/error toast notifications, and proper state management using existing profile hooks."
+  "frontend/src/lib/homepageDefaults.ts": "Centralized default homepage content with deep merge utility function that uses nullish coalescing (??) instead of logical OR (||) to preserve intentionally saved empty strings and only fall back to defaults when values are null/undefined.",
+  "frontend/src/pages/AdminHomeEditor.tsx": "Admin-only page for editing homepage content and managing website lifecycle with shutdown controls including retire/reactivate website and purge data operations with explicit confirmation dialogs.",
+  "frontend/src/utils/urlParams.ts": "Utility functions for parsing and managing URL parameters including secret handling, session storage, and new re-edit parameter encoding/decoding functions (encodeReEditParams, parseReEditParams) for navigation between history and tool pages.",
+  "frontend/src/components/EditProfileDialog.tsx": "Dialog component for editing user profile name with form validation, success/error toast notifications, and proper state management using existing profile hooks.",
+  "frontend/src/hooks/useWebsiteStatus.ts": "React Query hook that fetches the website status (active or retired) from the backend, exposing loading and error states for retired-mode gating.",
+  "frontend/src/hooks/useWebsiteAdminActions.ts": "React Query mutations for admin-only website lifecycle operations including retire, reactivate, and purge data with proper cache invalidation.",
+  "frontend/src/pages/SiteRetired.tsx": "Public-facing retired website screen that displays a neutral shutdown notice with optional backend-provided message, using consistent gray theme styling."
 }

@@ -1,58 +1,144 @@
 {
   "kind": "build_request",
-  "title": "Add user profile editing (update name) for signed-in users",
+  "title": "Retire (disable) the website and block access to all features",
   "priority": "normal",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Add a user-facing way for an authenticated user to edit their profile (at minimum, update their display name) after initial onboarding.",
-      "target": "frontend",
+      "text": "Add a canister-level \"site retired\" state that can be toggled by an administrator, and expose a public query to read the current site status (retired flag + optional public message).",
+      "target": "backend",
       "source": {
         "messageIds": [
-          "msg-6"
+          "msg-user-1"
         ],
         "quotes": [
-          "I want to edit"
+          "I want to delete this website"
         ]
       },
       "acceptanceCriteria": [
-        "When a user is signed in, there is a visible entry point labeled \"Edit Profile\" available from the main UI (e.g., header or account area).",
-        "Selecting \"Edit Profile\" opens a dialog or page that pre-fills the current saved name (if any) and allows changing it.",
-        "Submitting the form saves the updated name via the existing profile save flow and shows a success message.",
-        "After saving, any UI that depends on the caller profile reflects the updated name without requiring a full page reload.",
-        "If the user is not authenticated, the edit profile entry point is not shown (or is disabled with a clear sign-in requirement)."
+        "Backend exposes a query method that returns whether the site is retired and a public-facing message.",
+        "Backend exposes an admin-only update method to set the site to retired (and optionally set/update the public message).",
+        "Non-admin callers cannot change the retired state (backend traps with an authorization error)."
       ]
     },
     {
       "id": "REQ-2",
-      "text": "Ensure profile editing uses the existing backend profile API and does not introduce new backend endpoints unless strictly necessary.",
-      "target": "both",
+      "text": "When the site is retired, block all non-admin, non-status backend operations (e.g., generation history mutations/queries and profile operations) so the application behaves as effectively deleted from the user perspective.",
+      "target": "backend",
       "source": {
         "messageIds": [
-          "msg-6"
+          "msg-user-1"
         ],
         "quotes": [
-          "I want to edit"
+          "I want to delete this website"
         ]
       },
       "acceptanceCriteria": [
-        "The profile edit flow calls the existing backend method for saving the caller profile (no duplicate APIs).",
-        "No backend state schema changes are required for this feature."
+        "If the site is retired, non-admin calls to generation history APIs (get/add/update/delete) trap with a clear error message in English indicating the site is retired.",
+        "If the site is retired, non-admin calls to user profile APIs (get/save) trap with a clear error message in English indicating the site is retired.",
+        "Admin callers can still access admin-only operations while the site is retired (so an admin can manage/verify state).",
+        "The homepage content query continues to work (or is replaced by the site status query) without causing frontend crashes."
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Add an admin-only backend operation to purge all stored user data (user profiles and generation history) to support “delete this website” as a data wipe, and make it available only when the site is retired.",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-user-1"
+        ],
+        "quotes": [
+          "I want to delete this website"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Backend exposes an admin-only method that deletes all stored user profiles and all stored generation history records.",
+        "The purge method is rejected for non-admin callers.",
+        "The purge method is rejected unless the site is in retired state.",
+        "After purge, queries for profiles/history return empty results (or trap if retired per REQ-2), and no prior data remains accessible."
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "text": "Implement a frontend \"Site Retired\" screen that replaces the normal app experience when the backend reports the site is retired, and ensure all routes (/, /text-to-image, /text-to-video, /text-to-voiceover, /my-history, /admin) render the retired screen for non-admin users.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-user-1"
+        ],
+        "quotes": [
+          "I want to delete this website"
+        ]
+      },
+      "acceptanceCriteria": [
+        "When the backend indicates retired=true, navigating to any existing route shows a single retired page with a clear English message (using the backend-provided public message if present).",
+        "When retired=true, primary navigation and tool entry points are not shown to non-admin users.",
+        "The retired screen does not require authentication to view.",
+        "If the backend is not retired, the app behaves exactly as before."
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "text": "Add an admin-only \"Retire site\" and \"Purge all user data\" control section to the existing Admin page, including a confirmation step to prevent accidental retirement/purge.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-user-1"
+        ],
+        "quotes": [
+          "I want to delete this website"
+        ]
+      },
+      "acceptanceCriteria": [
+        "The Admin page shows controls to: (1) set the site to retired with an optional public message, and (2) purge all user data (only enabled/visible after retirement).",
+        "Both actions require an explicit confirmation (e.g., typing a confirmation phrase or a confirm dialog) before executing.",
+        "After successfully retiring the site, the UI reflects the new status without requiring a hard refresh.",
+        "Errors (e.g., non-admin, backend traps) are displayed to the admin in English via existing toast/error UI patterns."
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "text": "Choose and apply a coherent visual theme for the \"Site Retired\" experience (typography, spacing, and neutral color palette) and use it consistently on the retired screen and admin retirement section.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-user-1"
+        ],
+        "quotes": [
+          "I want to delete this website"
+        ]
+      },
+      "acceptanceCriteria": [
+        "The retired screen and admin retirement section share consistent styling (colors, typography, spacing).",
+        "No blue/purple-dominant palette is introduced unless already present; use a neutral/gray-based theme appropriate for a shutdown notice.",
+        "All user-facing text shown in these new UI surfaces is in English."
       ]
     }
   ],
   "constraints": [
-    "Do not edit files under frontend/src/components/ui (shadcn components must be composed, not modified).",
-    "Do not edit immutable paths listed in SYSTEM_CONTEXT (e.g., frontend/src/hooks/useInternetIdentity.ts/tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx).",
-    "Backend must remain a single Motoko actor in backend/main.mo; add backend/migration.mo only if a stable state upgrade is required."
+    "Do not modify files under frontend/src/components/ui (compose existing shadcn components instead).",
+    "Do not modify immutable hook/bootstrapping files listed in SYSTEM_CONTEXT (e.g., frontend/src/hooks/useInternetIdentity.ts(x), frontend/src/hooks/useActor.ts, frontend/src/main.tsx).",
+    "Backend must remain a single Motoko actor in backend/main.mo (no additional canisters/services).",
+    "This change cannot actually delete the canister or remove the URL from the Internet Computer; instead, implement a retired/disabled mode and (optionally) a data purge to achieve the practical effect of “deleting the website.”"
   ],
   "nonGoals": [
-    "Adding editing capabilities for generation history records (re-edit/touch-up) beyond what already exists.",
-    "Adding third-party authentication providers (only Internet Identity is supported).",
-    "Adding external databases or non-Motoko backend services."
+    "Actual canister deletion, domain takedown, or removing the website from the network (not possible from within app code).",
+    "Adding third-party auth or external storage to archive/delete data.",
+    "Redesigning the existing non-retired app pages beyond what is necessary to gate them behind the retired mode."
   ],
   "imageRequirements": {
     "required": [],
     "edits": []
+  },
+  "userProfileUpdate": {
+    "goalsToAdd": [],
+    "goalsToRemove": [],
+    "preferencesToAdd": [],
+    "preferencesToRemove": [],
+    "miscToAdd": [],
+    "miscToRemove": [],
+    "fieldsToSet": {},
+    "fieldsToDelete": []
   }
 }
